@@ -25,9 +25,12 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.3854925, 0.3854925, 0.38549235, 1)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=931305634]
+[node name="ScrollContainer" type="ScrollContainer" parent="ColorRect" unique_id=761245931]
 layout_mode = 0
 offset_left = 17.0
-offset_top = 14.0
-offset_right = 452.0
-offset_bottom = 640.0
+offset_top = 16.0
+offset_right = 457.0
+offset_bottom = 633.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/ScrollContainer" unique_id=23219955]
+layout_mode = 2

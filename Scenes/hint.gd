@@ -12,7 +12,8 @@ func PopulateHintList(strings : Array[String]):
 	
 	for i in strings:
 		var Entry = HINT_ENTRY.instantiate()
-		$ColorRect/VBoxContainer.add_child(Entry)
+		#$ColorRect/VBoxContainer.add_child(Entry)
+		$ColorRect/ScrollContainer/VBoxContainer.add_child(Entry)
 		#$ColorRect/GridContainer.add_child(Entry)
 		Entry.SetTitle(i)
 		Entries.append(Entry)
