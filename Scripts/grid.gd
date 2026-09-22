@@ -13,6 +13,7 @@ const TOTAL_GRID_HEIGHT : int = GRID_HEIGHT * (TILE_HEIGHT + TILE_GAP)
 const TILE_COUNT : int = GRID_WIDTH * GRID_HEIGHT
 
 var ActiveIndex : int = 0
+var HintTitles : Array[String] = []
 
 var CurrentHighlight : Constants.Highlight = Constants.Highlight.Inactive
 
@@ -91,13 +92,13 @@ func SpawnGrid():
 		
 		Tiles.append(new_tile)
 
-# This doesn't really take blocked into account
-# TODO: Fix
 func SetTileNumbers():
 	for i in range(TILE_COUNT):
 		Tiles[i].ClearWordNumber()
-		
-	var Number = 1
+	
+	HintTitles = []
+	
+	#var Number = 1
 	var VerticalChecked = []
 	var HorizontalChecked = []
 	var GivenNumber = []
@@ -106,6 +107,8 @@ func SetTileNumbers():
 		for x in range(GRID_WIDTH):
 			if Tiles[x + y * GRID_WIDTH].GetBlocked():
 				continue
+				
+			var Number = GivenNumber.size() + 1
 			
 			# Vertical Check
 			if not (y * GRID_WIDTH + x in VerticalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
@@ -117,7 +120,7 @@ func SetTileNumbers():
 				if WordCount > 1:
 					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
 					GivenNumber.append(x + y * GRID_WIDTH)
-					Number += 1
+					HintTitles.append(str(Number) + "D")
 			
 			# Mark this axis as considered in vertical
 			for dy in range(y, GRID_HEIGHT):
@@ -126,26 +129,40 @@ func SetTileNumbers():
 				VerticalChecked.append(x + dy * GRID_WIDTH)
 			
 			# Horizontal Check
-			if not (y * GRID_WIDTH + x in HorizontalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
+			if not (y * GRID_WIDTH + x in HorizontalChecked):
 				var WordCount = 0
 				for dx in range(x, GRID_WIDTH):
 					if Tiles[dx + y * GRID_WIDTH].GetBlocked():
 						break
 					WordCount += 1
 				if WordCount > 1:
-					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
-					GivenNumber.append(x + y * GRID_WIDTH)
-					Number += 1
+					if (y * GRID_WIDTH + x in GivenNumber):
+						HintTitles.append(str(Number) + "A")
+					else:
+						Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
+						GivenNumber.append(x + y * GRID_WIDTH)
+						HintTitles.append(str(Number) + "A")
 			
 			# Mark this axis as considered horizontally
 			for dx in range(x, GRID_WIDTH):
 				if Tiles[dx + y * GRID_WIDTH].GetBlocked():
 					break
 				HorizontalChecked.append(dx + y * GRID_WIDTH)
+			
+			Number += 1
+	
+	for i in HintTitles:
+		print(i)
+	print()
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	SpawnGrid()
 	SetTileNumbers()
+	$"../Hint".PopulateHintList(HintTitles)
+
+func SetHintList():
+	$"../Hint".PopulateHintList(HintTitles)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed() and !event.is_echo():

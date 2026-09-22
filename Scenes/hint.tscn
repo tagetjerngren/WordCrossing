@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://c4unaponxdrp0"]
 
+[ext_resource type="Script" uid="uid://coi4m6x1iblev" path="res://Scenes/hint.gd" id="1_m0e3l"]
+
 [node name="Hint" type="Control" unique_id=221862569]
 layout_mode = 3
 anchors_preset = 15
@@ -8,6 +10,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("1_m0e3l")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=882538620]
 layout_mode = 1
@@ -15,21 +18,16 @@ anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
 offset_left = 37.0
-offset_top = -211.0
-offset_right = 350.0
-offset_bottom = 212.0
+offset_top = -306.0
+offset_right = 508.0
+offset_bottom = 341.0
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.3854925, 0.3854925, 0.38549235, 1)
-metadata/_edit_group_ = true
 
-[node name="Label" type="Label" parent="ColorRect" unique_id=2117907801]
-custom_maximum_size = Vector2(290, 400)
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect" unique_id=931305634]
 layout_mode = 0
-offset_left = 12.0
-offset_top = 13.0
-offset_right = 302.0
-offset_bottom = 88.0
-text = "1A
-What fills the Venn diagram of \"Spider-Man\" and \"the Internet\""
-autowrap_mode = 2
+offset_left = 17.0
+offset_top = 14.0
+offset_right = 452.0
+offset_bottom = 640.0

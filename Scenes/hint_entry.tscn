@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dlbop14a52usk"]
+
+[ext_resource type="Script" uid="uid://bg47ki3itp2se" path="res://Scripts/hint_entry.gd" id="1_le3yn"]
+
+[node name="HintEntry" type="HBoxContainer" unique_id=1807114944]
+custom_maximum_size = Vector2(440, 200)
+script = ExtResource("1_le3yn")
+
+[node name="Label" type="Label" parent="." unique_id=1476332128]
+custom_minimum_size = Vector2(50, 30)
+custom_maximum_size = Vector2(100, 100)
+layout_mode = 2
+text = "1A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TextEdit" type="TextEdit" parent="." unique_id=1034515272]
+custom_minimum_size = Vector2(500, 100)
+custom_maximum_size = Vector2(500, 500)
+layout_mode = 2
+placeholder_text = "Enter Word Clue"
+wrap_mode = 1

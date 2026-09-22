@@ -18,10 +18,10 @@ position = Vector2(1200, 600)
 [node name="Hint" parent="." unique_id=221862569 instance=ExtResource("2_6phgx")]
 
 [node name="BlockTile" parent="." unique_id=874212332 instance=ExtResource("3_6phgx")]
-position = Vector2(241, 915)
+position = Vector2(273, 124)
 
 [node name="BlockTile2" parent="." unique_id=233604654 instance=ExtResource("3_6phgx")]
-position = Vector2(95, 913)
+position = Vector2(109, 121)
 
 [node name="BlockTile3" parent="." unique_id=706124688 instance=ExtResource("3_6phgx")]
-position = Vector2(394, 915)
+position = Vector2(432, 121)

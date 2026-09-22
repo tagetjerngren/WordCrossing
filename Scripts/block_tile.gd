@@ -47,4 +47,5 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 			#closest_tile.SetState(Constants.TileState.Blocked)
 			closest_tile.SetBlocked(true)
 			closest_tile.Owner.SetTileNumbers()
+			closest_tile.Owner.SetHintList()
 			BlockedTile = closest_tile
