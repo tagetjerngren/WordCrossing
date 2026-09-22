@@ -2,7 +2,8 @@ class_name Constants
 enum TileState {
 	Inactive,
 	WordActive,
-	TileActive
+	TileActive,
+	Blocked
 }
 enum Highlight {
 	Inactive,

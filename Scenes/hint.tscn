@@ -19,6 +19,7 @@ offset_top = -211.0
 offset_right = 350.0
 offset_bottom = 212.0
 grow_vertical = 2
+mouse_filter = 2
 color = Color(0.3854925, 0.3854925, 0.38549235, 1)
 metadata/_edit_group_ = true
 

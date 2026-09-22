@@ -12,14 +12,14 @@ script = ExtResource("1_vx4y2")
 position = Vector2(-0.5, 0)
 shape = SubResource("RectangleShape2D_fpc0v")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1360399491]
+[node name="TileBackground" type="ColorRect" parent="." unique_id=1360399491]
 offset_left = -64.0
 offset_top = -64.0
 offset_right = 64.0
 offset_bottom = 64.0
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="." unique_id=1749630014]
+[node name="Letter" type="Label" parent="." unique_id=1749630014]
 offset_left = -64.0
 offset_top = -64.0
 offset_right = 63.0
@@ -29,14 +29,13 @@ theme_override_font_sizes/font_size = 92
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Label2" type="Label" parent="." unique_id=1602217114]
+[node name="WordNumber" type="Label" parent="." unique_id=1602217114]
 offset_left = -61.0
 offset_top = -61.0
 offset_right = -43.0
 offset_bottom = -30.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 22
-text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 

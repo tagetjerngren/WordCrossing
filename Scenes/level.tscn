@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://n67n82bs4lrw" path="res://Scenes/grid.tscn" id="1_k5f4k"]
 [ext_resource type="PackedScene" uid="uid://c4unaponxdrp0" path="res://Scenes/hint.tscn" id="2_6phgx"]
+[ext_resource type="PackedScene" uid="uid://bxvye3lxwcbq1" path="res://Scenes/block_tile.tscn" id="3_6phgx"]
 
 [node name="Level" type="Node" unique_id=39279757]
 
@@ -15,3 +16,12 @@ color = Color(0.4392, 0.72, 0.52812004, 1)
 position = Vector2(786.08, 388)
 
 [node name="Hint" parent="." unique_id=221862569 instance=ExtResource("2_6phgx")]
+
+[node name="BlockTile" parent="." unique_id=874212332 instance=ExtResource("3_6phgx")]
+position = Vector2(121, 526)
+
+[node name="BlockTile2" parent="." unique_id=233604654 instance=ExtResource("3_6phgx")]
+position = Vector2(114, 383)
+
+[node name="BlockTile3" parent="." unique_id=706124688 instance=ExtResource("3_6phgx")]
+position = Vector2(264, 445)

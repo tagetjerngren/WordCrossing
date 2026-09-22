@@ -10,7 +10,7 @@ const GRID_WIDTH : int = 5
 const GRID_HEIGHT : int = 5
 const TOTAL_GRID_WIDTH : int = GRID_WIDTH * (TILE_WIDTH + TILE_GAP)
 const TOTAL_GRID_HEIGHT : int = GRID_HEIGHT * (TILE_HEIGHT + TILE_GAP)
-const TILE_COUNT = GRID_WIDTH * GRID_HEIGHT
+const TILE_COUNT : int = GRID_WIDTH * GRID_HEIGHT
 
 var ActiveIndex : int = 0
 
@@ -22,14 +22,14 @@ func SetColumnState(State):
 		Tiles[i].SetState(State)
 
 func SetRowState(State):
-	var Row = floor(ActiveIndex / GRID_HEIGHT)
+	var Row = ActiveIndex / GRID_HEIGHT
 	for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
 		Tiles[i].SetState(State)
 		
 func TileClicked(Index):
 	# Deactive the old selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		var Row = floor(ActiveIndex / GRID_HEIGHT)
+		var Row = ActiveIndex / GRID_HEIGHT
 		for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
 			Tiles[i].SetState(Constants.TileState.Inactive)
 	elif CurrentHighlight == Constants.Highlight.ColumnActive:
@@ -55,7 +55,7 @@ func SetActive(Index):
 	
 		# Deactive the old selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		var Row = floor(ActiveIndex / GRID_HEIGHT)
+		var Row = ActiveIndex / GRID_HEIGHT
 		for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
 			Tiles[i].SetState(Constants.TileState.Inactive)
 	elif CurrentHighlight == Constants.Highlight.ColumnActive:
@@ -67,7 +67,7 @@ func SetActive(Index):
 	
 	# Highlight the new selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		var Row = floor(ActiveIndex / GRID_HEIGHT)
+		var Row = ActiveIndex / GRID_HEIGHT
 		#print(Row)
 		for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
 			Tiles[i].SetState(Constants.TileState.WordActive)
@@ -79,28 +79,70 @@ func SetActive(Index):
 
 	Tiles[ActiveIndex].SetState(Constants.TileState.TileActive)
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func SpawnGrid():
 	for i in range(TILE_COUNT):
-		#print(i)
 		var new_tile = TILE.instantiate()
 		add_child(new_tile)
 		new_tile.position.x += (i % GRID_WIDTH) * (TILE_WIDTH + TILE_GAP) - TOTAL_GRID_WIDTH / 2
-		new_tile.position.y += floor(i / GRID_HEIGHT) * (TILE_HEIGHT + TILE_GAP) - TOTAL_GRID_HEIGHT / 2
+		new_tile.position.y += (i / GRID_HEIGHT) * (TILE_HEIGHT + TILE_GAP) - TOTAL_GRID_HEIGHT / 2
 
 		new_tile.Index = i
 		new_tile.Owner = self
 		
 		Tiles.append(new_tile)
 
+# This doesn't really take blocked into account
+# TODO: Fix
+func SetTileNumbers():
+	for i in range(TILE_COUNT):
+		Tiles[i].ClearWordNumber()
+		
+	var Number = 1
+	var VerticalChecked = []
+	var HorizontalChecked = []
+	var GivenNumber = []
+	
+	for y in range(GRID_HEIGHT):
+		for x in range(GRID_WIDTH):
+			if Tiles[x + y * GRID_WIDTH].GetState() == Constants.TileState.Blocked:
+				continue
+				
+			if not (y * GRID_WIDTH + x in VerticalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
+				Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
+				GivenNumber.append(x + y * GRID_WIDTH)
+				Number += 1
+				# This doesn't take blocked into account
+				for dy in range(GRID_HEIGHT):
+					VerticalChecked.append(x + dy * GRID_WIDTH)
+			
+			if not (y * GRID_WIDTH + x in HorizontalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
+				Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
+				GivenNumber.append(x + y * GRID_WIDTH)
+				Number += 1
+				# This doesn't take blocked into account
+				for dx in range(GRID_WIDTH):
+					HorizontalChecked.append(dx + y * GRID_WIDTH)
+	#var i = 0
+	#for y in range(GRID_HEIGHT):
+		#for x in range(GRID_WIDTH):
+			#var dy = 0
+			#while dy < GRID_HEIGHT:
+				#dy += 1
+				#if Tiles[x + dy * GRID_WIDTH].GetState() == Constants.TileState.Blocked:
+					#break
+			#print("x: %d, y: %d" % [x, y])
+			#Tiles[y * GRID_WIDTH + x].SetCharacter(str(i))
+			#i += 1
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	SpawnGrid()
+	SetTileNumbers()
+
 func _input(event: InputEvent) -> void:
-	#if event is InputEventKey and !event.is_echo() and !event.is_released():
-	#print(!event.is_echo())
 	if event is InputEventKey and event.is_pressed() and !event.is_echo():
 		var label = DisplayServer.keyboard_get_label_from_physical(event.physical_keycode)
-		#print(label)
 		if label == 4194308:
-			#print(Tiles[ActiveIndex].GetCharacter())
 			if Tiles[ActiveIndex].GetCharacter() != "":
 				Tiles[ActiveIndex].SetCharacter("")
 				return
@@ -110,8 +152,6 @@ func _input(event: InputEvent) -> void:
 					PrevTile -= 1
 				if CurrentHighlight == Constants.Highlight.ColumnActive:
 					PrevTile -= GRID_WIDTH
-					#if NextTile >= TILE_COUNT:
-						#NextTile -= (TILE_COUNT - 1)
 			SetActive(PrevTile)
 			Tiles[ActiveIndex].SetCharacter("")
 		if 65 <= label and label <= 90:
@@ -129,5 +169,3 @@ func _input(event: InputEvent) -> void:
 					if NextTile >= TILE_COUNT:
 						NextTile -= (TILE_COUNT - 1)
 			SetActive(NextTile)
-			
-		#Tiles[ActiveIndex].SetCharacter(OS.get_keycode_string(label))
