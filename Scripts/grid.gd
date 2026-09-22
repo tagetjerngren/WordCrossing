@@ -106,38 +106,42 @@ func SetTileNumbers():
 		for x in range(GRID_WIDTH):
 			if Tiles[x + y * GRID_WIDTH].GetBlocked():
 				continue
-				
+			
+			# Vertical Check
 			if not (y * GRID_WIDTH + x in VerticalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
-				var WordLength = 0
+				var WordCount = 0
 				for dy in range(y, GRID_HEIGHT):
 					if Tiles[x + dy * GRID_WIDTH].GetBlocked():
 						break
-					WordLength += 1
-					VerticalChecked.append(x + dy * GRID_WIDTH)
-				if (WordLength > 1):
+					WordCount += 1
+				if WordCount > 1:
 					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
 					GivenNumber.append(x + y * GRID_WIDTH)
 					Number += 1
-				else:
-					# This might be kind of a hacky way to do it, idk
-					GivenNumber.append(x + y * GRID_WIDTH)
 			
+			# Mark this axis as considered in vertical
+			for dy in range(y, GRID_HEIGHT):
+				if Tiles[x + dy * GRID_WIDTH].GetBlocked():
+					break
+				VerticalChecked.append(x + dy * GRID_WIDTH)
+			
+			# Horizontal Check
 			if not (y * GRID_WIDTH + x in HorizontalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
-				var WordLength = 0
-
+				var WordCount = 0
 				for dx in range(x, GRID_WIDTH):
 					if Tiles[dx + y * GRID_WIDTH].GetBlocked():
 						break
-					WordLength += 1
-					HorizontalChecked.append(dx + y * GRID_WIDTH)
-				if WordLength > 1:
+					WordCount += 1
+				if WordCount > 1:
 					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
 					GivenNumber.append(x + y * GRID_WIDTH)
 					Number += 1
-				else:
-					# This I don't even think is necessary since we don't ever come back to this tile
-					GivenNumber.append(x + y * GRID_WIDTH)
-
+			
+			# Mark this axis as considered horizontally
+			for dx in range(x, GRID_WIDTH):
+				if Tiles[dx + y * GRID_WIDTH].GetBlocked():
+					break
+				HorizontalChecked.append(dx + y * GRID_WIDTH)
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	SpawnGrid()
