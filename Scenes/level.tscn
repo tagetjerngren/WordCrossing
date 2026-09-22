@@ -9,7 +9,7 @@
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1879438457]
 offset_right = 1920.0
 offset_bottom = 1080.0
-mouse_filter = 2
+mouse_filter = 1
 color = Color(0.4392, 0.72, 0.52812004, 1)
 
 [node name="Grid" parent="." unique_id=1413559531 instance=ExtResource("1_k5f4k")]

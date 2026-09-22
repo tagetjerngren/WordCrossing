@@ -20,3 +20,5 @@ custom_maximum_size = Vector2(500, 500)
 layout_mode = 2
 placeholder_text = "Enter Word Clue"
 wrap_mode = 1
+
+[connection signal="focus_exited" from="TextEdit" to="." method="_on_text_edit_focus_exited"]

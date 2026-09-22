@@ -150,10 +150,6 @@ func SetTileNumbers():
 				HorizontalChecked.append(dx + y * GRID_WIDTH)
 			
 			Number += 1
-	
-	for i in HintTitles:
-		print(i)
-	print()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -163,6 +159,9 @@ func _ready() -> void:
 
 func SetHintList():
 	$"../Hint".PopulateHintList(HintTitles)
+	
+func UnfocusHintList():
+	$"../Hint".UnfocusList()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed() and !event.is_echo():

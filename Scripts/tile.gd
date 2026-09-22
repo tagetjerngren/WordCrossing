@@ -23,6 +23,8 @@ func _ready() -> void:
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.is_pressed() and not bBlocked:
 		Owner.TileClicked(Index)
+		Owner.UnfocusHintList()
+
 
 func SetWordNumber(Number : int):
 	WordNumber.text = str(Number)
