@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://dwgonl0jxpcgn"]
+
+[ext_resource type="Script" uid="uid://cwfpwuoix4n62" path="res://Scripts/tile.gd" id="1_vx4y2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fpc0v"]
+size = Vector2(128, 128)
+
+[node name="Tile" type="Area2D" unique_id=421045512]
+script = ExtResource("1_vx4y2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1004172018]
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_fpc0v")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1360399491]
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="." unique_id=1749630014]
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 63.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 92
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="." unique_id=1602217114]
+offset_left = -61.0
+offset_top = -61.0
+offset_right = -43.0
+offset_bottom = -30.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 22
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
