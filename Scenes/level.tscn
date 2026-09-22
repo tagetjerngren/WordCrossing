@@ -7,21 +7,21 @@
 [node name="Level" type="Node" unique_id=39279757]
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1879438457]
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_right = 1920.0
+offset_bottom = 1080.0
 mouse_filter = 2
 color = Color(0.4392, 0.72, 0.52812004, 1)
 
 [node name="Grid" parent="." unique_id=1413559531 instance=ExtResource("1_k5f4k")]
-position = Vector2(786.08, 388)
+position = Vector2(1200, 600)
 
 [node name="Hint" parent="." unique_id=221862569 instance=ExtResource("2_6phgx")]
 
 [node name="BlockTile" parent="." unique_id=874212332 instance=ExtResource("3_6phgx")]
-position = Vector2(121, 526)
+position = Vector2(241, 915)
 
 [node name="BlockTile2" parent="." unique_id=233604654 instance=ExtResource("3_6phgx")]
-position = Vector2(114, 383)
+position = Vector2(95, 913)
 
 [node name="BlockTile3" parent="." unique_id=706124688 instance=ExtResource("3_6phgx")]
-position = Vector2(264, 445)
+position = Vector2(394, 915)
