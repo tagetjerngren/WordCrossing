@@ -11,6 +11,8 @@ var WordActiveColor : Color = Color(0.991, 1.0, 0.44, 1.0)
 var TileActiveColor : Color = Color(0.451, 0.816, 1.0, 1.0)
 var TileBlockColor : Color = Color()
 
+var bBlocked : bool = false
+
 @onready var Letter : Label = $Letter
 @onready var TileBackground : ColorRect = $TileBackground
 @onready var WordNumber : Label = $WordNumber
@@ -19,11 +21,10 @@ func _ready() -> void:
 	SetState(CurrentState)
 
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if event is InputEventMouseButton and event.is_pressed():
+	if event is InputEventMouseButton and event.is_pressed() and not bBlocked:
 		Owner.TileClicked(Index)
 
 func SetWordNumber(Number : int):
-	print(Number)
 	WordNumber.text = str(Number)
 
 func ClearWordNumber():
@@ -46,3 +47,9 @@ func SetState(State : Constants.TileState):
 
 func GetState():
 	return CurrentState
+
+func GetBlocked():
+	return bBlocked
+
+func SetBlocked(Blocked : bool):
+	bBlocked = Blocked

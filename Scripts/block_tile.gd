@@ -7,6 +7,7 @@ func _ready() -> void:
 
 var bHeld : bool = false
 var Offset : Vector2 
+var BlockedTile : Tile
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -18,6 +19,8 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
 		bHeld = true
 		Offset = get_global_mouse_position() - position
+		if BlockedTile != null:
+			BlockedTile.SetBlocked(false)
 	
 	if event is InputEventMouseButton and event.is_released():
 		bHeld = false
@@ -41,5 +44,7 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 					closest_tile = tile
 					distance = tile.global_position.distance_to(position)
 			global_position = closest_tile.global_position
-			closest_tile.SetState(Constants.TileState.Blocked)
+			#closest_tile.SetState(Constants.TileState.Blocked)
+			closest_tile.SetBlocked(true)
 			closest_tile.Owner.SetTileNumbers()
+			BlockedTile = closest_tile

@@ -104,35 +104,39 @@ func SetTileNumbers():
 	
 	for y in range(GRID_HEIGHT):
 		for x in range(GRID_WIDTH):
-			if Tiles[x + y * GRID_WIDTH].GetState() == Constants.TileState.Blocked:
+			if Tiles[x + y * GRID_WIDTH].GetBlocked():
 				continue
 				
 			if not (y * GRID_WIDTH + x in VerticalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
-				Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
-				GivenNumber.append(x + y * GRID_WIDTH)
-				Number += 1
-				# This doesn't take blocked into account
-				for dy in range(GRID_HEIGHT):
+				var WordLength = 0
+				for dy in range(y, GRID_HEIGHT):
+					if Tiles[x + dy * GRID_WIDTH].GetBlocked():
+						break
+					WordLength += 1
 					VerticalChecked.append(x + dy * GRID_WIDTH)
+				if (WordLength > 1):
+					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
+					GivenNumber.append(x + y * GRID_WIDTH)
+					Number += 1
+				else:
+					# This might be kind of a hacky way to do it, idk
+					GivenNumber.append(x + y * GRID_WIDTH)
 			
 			if not (y * GRID_WIDTH + x in HorizontalChecked) and not (y * GRID_WIDTH + x in GivenNumber):
-				Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
-				GivenNumber.append(x + y * GRID_WIDTH)
-				Number += 1
-				# This doesn't take blocked into account
-				for dx in range(GRID_WIDTH):
+				var WordLength = 0
+
+				for dx in range(x, GRID_WIDTH):
+					if Tiles[dx + y * GRID_WIDTH].GetBlocked():
+						break
+					WordLength += 1
 					HorizontalChecked.append(dx + y * GRID_WIDTH)
-	#var i = 0
-	#for y in range(GRID_HEIGHT):
-		#for x in range(GRID_WIDTH):
-			#var dy = 0
-			#while dy < GRID_HEIGHT:
-				#dy += 1
-				#if Tiles[x + dy * GRID_WIDTH].GetState() == Constants.TileState.Blocked:
-					#break
-			#print("x: %d, y: %d" % [x, y])
-			#Tiles[y * GRID_WIDTH + x].SetCharacter(str(i))
-			#i += 1
+				if WordLength > 1:
+					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
+					GivenNumber.append(x + y * GRID_WIDTH)
+					Number += 1
+				else:
+					# This I don't even think is necessary since we don't ever come back to this tile
+					GivenNumber.append(x + y * GRID_WIDTH)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
