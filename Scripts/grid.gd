@@ -1,17 +1,18 @@
-extends Node2D
+extends Control
 
 const TILE = preload("res://Scenes/tile.tscn")
 var Tiles = []
 
 var bFocused : bool = false
 
-const TILE_WIDTH : int = 128
-const TILE_HEIGHT : int = 128
-const TILE_GAP : int = 2
+var TILE_WIDTH : int = 128
+var TILE_HEIGHT : int = 128
+const TILE_GAP : int = 5
 const GRID_WIDTH : int = 5
 const GRID_HEIGHT : int = 5
-const TOTAL_GRID_WIDTH : int = GRID_WIDTH * (TILE_WIDTH + TILE_GAP)
-const TOTAL_GRID_HEIGHT : int = GRID_HEIGHT * (TILE_HEIGHT + TILE_GAP)
+const GRID_PADDING : int = 20
+@onready var TOTAL_GRID_WIDTH : int = $GridBackground.size.x
+@onready var TOTAL_GRID_HEIGHT : int = $GridBackground.size.y
 const TILE_COUNT : int = GRID_WIDTH * GRID_HEIGHT
 
 var ActiveIndex : int = 0
@@ -45,12 +46,7 @@ func SetRowInvalid(Index : int, Invalid : bool):
 			break
 		Tiles[i].SetInvalidWord(Invalid)
 		
-#Change the principile to be grow down, then grow up, stop at blocks
 func SetColumnState(State):
-	#var Column = ActiveIndex % GRID_HEIGHT
-	#for i in range(Column, TILE_COUNT, GRID_WIDTH):
-		#Tiles[i].SetState(State)
-	#var Column = ActiveIndex % GRID_HEIGHT
 	# Grow Down
 	for i in range(ActiveIndex, TILE_COUNT, GRID_WIDTH):
 		if Tiles[i].GetBlocked():
@@ -100,8 +96,7 @@ func TileClicked(Index):
 			CurrentHighlight = Constants.Highlight.RowActive
 	SetActive(Index)
 	
-# Split this into functions that work on click and on type
-# And one that just deals with updating the proper data
+
 func SetActive(Index):
 	# Deactive the old selected tile
 	Tiles[ActiveIndex].SetState(Constants.TileState.Inactive)
@@ -120,16 +115,8 @@ func SetActive(Index):
 	
 	# Highlight the new selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		#var Row = ActiveIndex / GRID_HEIGHT
-		##print(Row)
-		#for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
-			#Tiles[i].SetState(Constants.TileState.WordActive)
 		SetRowState(Constants.TileState.WordActive)
 	elif CurrentHighlight == Constants.Highlight.ColumnActive:
-		#var Column = ActiveIndex % GRID_HEIGHT
-		##print(Column)
-		#for i in range(Column, TILE_COUNT, GRID_WIDTH):
-			#Tiles[i].SetState(Constants.TileState.WordActive)
 		SetColumnState(Constants.TileState.WordActive)
 
 	Tiles[ActiveIndex].SetState(Constants.TileState.TileActive)
@@ -154,11 +141,25 @@ func HintFocused(Hint : String):
 		CurrentHighlight = Constants.Highlight.ColumnActive
 
 func SpawnGrid():
+	TILE_WIDTH = (TOTAL_GRID_WIDTH - 2 * GRID_PADDING - (GRID_WIDTH - 1) * TILE_GAP) / GRID_WIDTH
+	TILE_HEIGHT = (TOTAL_GRID_HEIGHT - 2 * GRID_PADDING - (GRID_HEIGHT - 1) * TILE_GAP) / GRID_HEIGHT
+	
+	# Get all the block tiles and scale them based on the current size of the tiles in the grid
+	for child in get_parent().get_children():
+		if child is BlockTile:
+			child.scale.x *= TILE_WIDTH / 100.0
+			child.scale.y *= TILE_HEIGHT / 100.0
+	
 	for i in range(TILE_COUNT):
-		var new_tile = TILE.instantiate()
+		var new_tile : Tile = TILE.instantiate()
 		add_child(new_tile)
-		new_tile.position.x += (i % GRID_WIDTH) * (TILE_WIDTH + TILE_GAP) - TOTAL_GRID_WIDTH / 2
-		new_tile.position.y += (i / GRID_HEIGHT) * (TILE_HEIGHT + TILE_GAP) - TOTAL_GRID_HEIGHT / 2
+		
+		# This is probably not the nicest thing, I believe that this is what results in the pixelly look of the text on the tiles. Works for now
+		new_tile.scale.x *= TILE_WIDTH / 100.0
+		new_tile.scale.y *= TILE_HEIGHT / 100.0
+		
+		new_tile.position.x = $GridBackground.position.x + GRID_PADDING + (i % GRID_WIDTH) * (TILE_WIDTH + TILE_GAP) + TILE_WIDTH / 2.0
+		new_tile.position.y = $GridBackground.position.y + GRID_PADDING + int(i / float(GRID_HEIGHT)) * (TILE_HEIGHT + TILE_GAP) + TILE_HEIGHT / 2.0
 
 		new_tile.Index = i
 		new_tile.Owner = self
@@ -232,8 +233,6 @@ func SetTileNumbers():
 
 var WordList : PackedStringArray
 
-var WordMap : Dictionary[String, bool]
-
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	SpawnGrid()
@@ -246,11 +245,7 @@ func _ready() -> void:
 	# Make it lowercase so our comparisons work
 	for i in range(WordList.size()):
 		WordList[i] = WordList[i].to_lower()
-		
-	#WordMap.set(WordList, true)
-	#print(WordList)
-	#print(WordList.has("war"))
-	#print("dfsdf" in content)
+
 
 func SetHintList():
 	$"../Hint".PopulateHintList(HintTitles)
@@ -376,31 +371,13 @@ func _input(event: InputEvent) -> void:
 					PrevTile -= GRID_WIDTH
 			SetActive(PrevTile)
 			Tiles[ActiveIndex].SetCharacter("")
-			if EvaluatePuzzle():
-					print("Puzzle Done!")
-		# TODO: Evaluate if a word is finished check it against the word list, and if not mark it somehow
-		# TODO: If whole puzzle is finished with acceptable words then finish game
+			EvaluatePuzzle()
 		if 65 <= label and label <= 90:
-			#ShowWordWarning(false)
 			var NextTile = ActiveIndex
 			if CurrentHighlight == Constants.Highlight.RowActive or CurrentHighlight == Constants.Highlight.ColumnActive:
 				Tiles[ActiveIndex].SetCharacter(OS.get_keycode_string(label))
 				
-				if EvaluatePuzzle():
-					print("Puzzle Done!")
-				#if CurrentHighlight == Constants.Highlight.RowActive:
-					#var Res = EvaluateRow(ActiveIndex)
-					#if Res[0]:
-						#if not (Res[1].to_lower() in WordList):
-							#ShowWordWarning(true)
-				#
-				#if CurrentHighlight == Constants.Highlight.ColumnActive:
-					#var Res = EvaluateColumn(ActiveIndex)
-					#if Res[0]:
-						#if not (Res[1].to_lower() in WordList):
-							#ShowWordWarning(true)
-						#else:
-							#print("True!")
+				EvaluatePuzzle()
 				
 				# Move to next tile
 				if CurrentHighlight == Constants.Highlight.RowActive:
@@ -416,8 +393,10 @@ func _input(event: InputEvent) -> void:
 			SetActive(NextTile)
 	
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
-		var Min = position - Vector2(TOTAL_GRID_WIDTH / 2 + (TILE_WIDTH/2), TOTAL_GRID_HEIGHT / 2 + (TILE_WIDTH/2))
-		var Max = position + Vector2(TOTAL_GRID_WIDTH / 2 - (TILE_HEIGHT/2), TOTAL_GRID_HEIGHT / 2 - (TILE_HEIGHT/2))
+		var Min = position
+		var Max = position + $GridBackground.size
+		#var Min = position - Vector2(TOTAL_GRID_WIDTH / 2 + (TILE_WIDTH/2), TOTAL_GRID_HEIGHT / 2 + (TILE_WIDTH/2))
+		#var Max = position + Vector2(TOTAL_GRID_WIDTH / 2 - (TILE_HEIGHT/2), TOTAL_GRID_HEIGHT / 2 - (TILE_HEIGHT/2))
 		var Mousepos = get_viewport().get_mouse_position()
 		
 		var bWithinX = Min.x <= Mousepos.x and Mousepos.x <= Max.x

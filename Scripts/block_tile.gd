@@ -1,3 +1,5 @@
+class_name BlockTile
+
 extends Area2D
 
 

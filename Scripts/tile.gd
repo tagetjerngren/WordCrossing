@@ -27,7 +27,6 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT and not bBlocked:
 		Owner.TileClicked(Index)
 
-
 func SetWordNumber(Number : int):
 	WordNumber.text = str(Number)
 
@@ -66,4 +65,3 @@ func SetInvalidWord(Invalid : bool):
 		$InvalidWordWarning.show()
 	else:
 		$InvalidWordWarning.hide()
-		#TileBackground.color = InvalidWordColor

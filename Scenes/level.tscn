@@ -13,24 +13,23 @@ mouse_filter = 1
 color = Color(0.4392, 0.72, 0.52812004, 1)
 
 [node name="Grid" parent="." unique_id=1413559531 instance=ExtResource("1_k5f4k")]
-position = Vector2(1200, 600)
 
 [node name="Hint" parent="." unique_id=221862569 instance=ExtResource("2_6phgx")]
 
 [node name="BlockTile" parent="." unique_id=874212332 instance=ExtResource("3_6phgx")]
-position = Vector2(283, 983)
+position = Vector2(299, 970)
 
 [node name="BlockTile2" parent="." unique_id=233604654 instance=ExtResource("3_6phgx")]
-position = Vector2(119, 980)
+position = Vector2(90, 980)
 
 [node name="BlockTile3" parent="." unique_id=706124688 instance=ExtResource("3_6phgx")]
-position = Vector2(442, 980)
+position = Vector2(505, 972)
 
 [node name="BlockTile4" parent="." unique_id=1845545464 instance=ExtResource("3_6phgx")]
-position = Vector2(432, 132)
+position = Vector2(503, 116)
 
 [node name="BlockTile5" parent="." unique_id=1295049684 instance=ExtResource("3_6phgx")]
-position = Vector2(269, 129)
+position = Vector2(288, 111)
 
 [node name="BlockTile6" parent="." unique_id=1332539876 instance=ExtResource("3_6phgx")]
-position = Vector2(120, 132)
+position = Vector2(81, 109)
