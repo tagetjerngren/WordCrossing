@@ -19,14 +19,37 @@ var HintTitles : Array[String] = []
 
 var CurrentHighlight : Constants.Highlight = Constants.Highlight.Inactive
 
+#Change the principile to be grow down, then grow up, stop at blocks
 func SetColumnState(State):
-	var Column = ActiveIndex % GRID_HEIGHT
-	for i in range(Column, TILE_COUNT, GRID_WIDTH):
+	#var Column = ActiveIndex % GRID_HEIGHT
+	#for i in range(Column, TILE_COUNT, GRID_WIDTH):
+		#Tiles[i].SetState(State)
+	#var Column = ActiveIndex % GRID_HEIGHT
+	# Grow Down
+	for i in range(ActiveIndex, TILE_COUNT, GRID_WIDTH):
+		if Tiles[i].GetBlocked():
+			break
+		Tiles[i].SetState(State)
+	
+	# Grow up
+	for i in range(ActiveIndex, -1, -GRID_WIDTH):
+		if Tiles[i].GetBlocked():
+			break
 		Tiles[i].SetState(State)
 
+
 func SetRowState(State):
-	var Row = ActiveIndex / GRID_HEIGHT
-	for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
+	var RowStart = ActiveIndex - (ActiveIndex % GRID_WIDTH) - 1
+	var RowEnd = RowStart + GRID_WIDTH + 1
+	
+	for i in range(ActiveIndex, RowEnd):
+		if Tiles[i].GetBlocked():
+			break
+		Tiles[i].SetState(State)
+	
+	for i in range(ActiveIndex, RowStart, -1):
+		if Tiles[i].GetBlocked():
+			break
 		Tiles[i].SetState(State)
 		
 func TileClicked(Index):
@@ -71,17 +94,38 @@ func SetActive(Index):
 	
 	# Highlight the new selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		var Row = ActiveIndex / GRID_HEIGHT
-		#print(Row)
-		for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
-			Tiles[i].SetState(Constants.TileState.WordActive)
+		#var Row = ActiveIndex / GRID_HEIGHT
+		##print(Row)
+		#for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
+			#Tiles[i].SetState(Constants.TileState.WordActive)
+		SetRowState(Constants.TileState.WordActive)
 	elif CurrentHighlight == Constants.Highlight.ColumnActive:
-		var Column = ActiveIndex % GRID_HEIGHT
-		#print(Column)
-		for i in range(Column, TILE_COUNT, GRID_WIDTH):
-			Tiles[i].SetState(Constants.TileState.WordActive)
+		#var Column = ActiveIndex % GRID_HEIGHT
+		##print(Column)
+		#for i in range(Column, TILE_COUNT, GRID_WIDTH):
+			#Tiles[i].SetState(Constants.TileState.WordActive)
+		SetColumnState(Constants.TileState.WordActive)
 
 	Tiles[ActiveIndex].SetState(Constants.TileState.TileActive)
+
+func HintFocused(Hint : String):
+	if CurrentHighlight == Constants.Highlight.RowActive:
+		var Row = ActiveIndex / GRID_HEIGHT
+		for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
+			Tiles[i].SetState(Constants.TileState.Inactive)
+	elif CurrentHighlight == Constants.Highlight.ColumnActive:
+		var Column = ActiveIndex % GRID_HEIGHT
+		for i in range(Column, TILE_COUNT, GRID_WIDTH):
+			Tiles[i].SetState(Constants.TileState.Inactive)
+	
+	if Hint[-1] == "A":
+		ActiveIndex = Thing[Hint].x + Thing[Hint].y * GRID_WIDTH
+		SetRowState(Constants.TileState.HintActive)
+		CurrentHighlight = Constants.Highlight.RowActive
+	elif Hint[-1] == "D":
+		ActiveIndex = Thing[Hint].x + Thing[Hint].y * GRID_WIDTH
+		SetColumnState(Constants.TileState.HintActive)
+		CurrentHighlight = Constants.Highlight.ColumnActive
 
 func SpawnGrid():
 	for i in range(TILE_COUNT):
@@ -95,11 +139,14 @@ func SpawnGrid():
 		
 		Tiles.append(new_tile)
 
+var Thing : Dictionary[String, Vector2] = {}
+
 func SetTileNumbers():
 	for i in range(TILE_COUNT):
 		Tiles[i].ClearWordNumber()
 	
 	HintTitles = []
+	Thing = {}
 	
 	#var Number = 1
 	var VerticalChecked = []
@@ -124,6 +171,7 @@ func SetTileNumbers():
 					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
 					GivenNumber.append(x + y * GRID_WIDTH)
 					HintTitles.append(str(Number) + "D")
+					Thing[str(Number) + "D"] = Vector2(x, y)
 			
 			# Mark this axis as considered in vertical
 			for dy in range(y, GRID_HEIGHT):
@@ -141,10 +189,12 @@ func SetTileNumbers():
 				if WordCount > 1:
 					if (y * GRID_WIDTH + x in GivenNumber):
 						HintTitles.append(str(Number) + "A")
+						Thing[str(Number) + "A"] = Vector2(x, y)
 					else:
 						Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
 						GivenNumber.append(x + y * GRID_WIDTH)
 						HintTitles.append(str(Number) + "A")
+						Thing[str(Number) + "A"] = Vector2(x, y)
 			
 			# Mark this axis as considered horizontally
 			for dx in range(x, GRID_WIDTH):
@@ -194,7 +244,7 @@ func _input(event: InputEvent) -> void:
 						NextTile -= (TILE_COUNT - 1)
 			SetActive(NextTile)
 	
-	if event is InputEventMouseButton and event.is_pressed():
+	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
 		var Min = position - Vector2(TOTAL_GRID_WIDTH / 2 + (TILE_WIDTH/2), TOTAL_GRID_HEIGHT / 2 + (TILE_WIDTH/2))
 		var Max = position + Vector2(TOTAL_GRID_WIDTH / 2 - (TILE_HEIGHT/2), TOTAL_GRID_HEIGHT / 2 - (TILE_HEIGHT/2))
 		var Mousepos = get_viewport().get_mouse_position()

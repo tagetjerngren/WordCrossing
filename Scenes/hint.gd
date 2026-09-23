@@ -12,16 +12,10 @@ func PopulateHintList(strings : Array[String]):
 	
 	for i in strings:
 		var Entry = HINT_ENTRY.instantiate()
-		#$ColorRect/VBoxContainer.add_child(Entry)
 		$ColorRect/ScrollContainer/VBoxContainer.add_child(Entry)
-		#$ColorRect/GridContainer.add_child(Entry)
 		Entry.SetTitle(i)
+		Entry.SetOwner(self)
 		Entries.append(Entry)
 
-func _ready() -> void:
-	pass
-	#PopulateHintList(["1A", "1D", "2A", "2D"])
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func HintFocused(Hint : String):
+	$"../Grid".HintFocused(Hint)

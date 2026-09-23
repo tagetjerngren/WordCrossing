@@ -44,8 +44,10 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 					closest_tile = tile
 					distance = tile.global_position.distance_to(position)
 			global_position = closest_tile.global_position
-			#closest_tile.SetState(Constants.TileState.Blocked)
 			closest_tile.SetBlocked(true)
-			closest_tile.Owner.SetTileNumbers()
-			closest_tile.Owner.SetHintList()
+			#closest_tile.Owner.SetTileNumbers()
+			#closest_tile.Owner.SetHintList()
 			BlockedTile = closest_tile
+		
+		$"../Grid".SetTileNumbers()
+		$"../Grid".SetHintList()

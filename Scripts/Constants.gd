@@ -3,7 +3,7 @@ enum TileState {
 	Inactive,
 	WordActive,
 	TileActive,
-	#Blocked
+	HintActive
 }
 enum Highlight {
 	Inactive,

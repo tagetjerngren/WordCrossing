@@ -10,6 +10,7 @@ var IdleColor : Color = Color(1.0, 1.0, 1.0, 1.0)
 var WordActiveColor : Color = Color(0.991, 1.0, 0.44, 1.0)
 var TileActiveColor : Color = Color(0.451, 0.816, 1.0, 1.0)
 var TileBlockColor : Color = Color()
+var TileHintColor : Color = Color(1.0, 0.81, 0.62, 1.0)
 
 var bBlocked : bool = false
 
@@ -45,6 +46,8 @@ func SetState(State : Constants.TileState):
 		TileBackground.color = WordActiveColor
 	elif CurrentState == Constants.TileState.TileActive:
 		TileBackground.color = TileActiveColor
+	elif CurrentState == Constants.TileState.HintActive:
+		TileBackground.color = TileHintColor
 
 func GetState():
 	return CurrentState
