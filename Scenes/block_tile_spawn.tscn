@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://hkugd1j5ibmb"]
 
-[ext_resource type="Script" uid="uid://bx21ednxdp6it" path="res://block_tile_spawn.gd" id="1_4trra"]
+[ext_resource type="Script" uid="uid://bx21ednxdp6it" path="res://Scripts/block_tile_spawn.gd" id="1_4trra"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fpc0v"]
 size = Vector2(100, 100)

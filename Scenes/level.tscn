@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://n67n82bs4lrw" path="res://Scenes/grid.tscn" id="1_k5f4k"]
 [ext_resource type="PackedScene" uid="uid://c4unaponxdrp0" path="res://Scenes/hint.tscn" id="2_6phgx"]
-[ext_resource type="PackedScene" uid="uid://hkugd1j5ibmb" path="res://block_tile_spawn.tscn" id="3_6phgx"]
+[ext_resource type="PackedScene" uid="uid://hkugd1j5ibmb" path="res://Scenes/block_tile_spawn.tscn" id="3_6phgx"]
 
 [node name="Level" type="Node" unique_id=39279757]
 

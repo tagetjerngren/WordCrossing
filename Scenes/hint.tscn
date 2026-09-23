@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c4unaponxdrp0"]
 
-[ext_resource type="Script" uid="uid://coi4m6x1iblev" path="res://Scenes/hint.gd" id="1_m0e3l"]
+[ext_resource type="Script" uid="uid://coi4m6x1iblev" path="res://Scripts/hint.gd" id="1_m0e3l"]
 
 [node name="Hint" type="Control" unique_id=221862569]
 layout_mode = 3
