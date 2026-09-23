@@ -261,6 +261,12 @@ func ShowWordWarning(show : bool):
 	else:
 		$NotWordWarning.hide()
 
+func ShowWinMessage(show : bool):
+	if show:
+		$WinMessage.show()
+	else:
+		$WinMessage.hide()
+
 func EvaluateRow(CheckPoint : int):
 	var RowStart = CheckPoint - (CheckPoint % GRID_WIDTH) - 1
 	var RowEnd = RowStart + GRID_WIDTH + 1
@@ -350,6 +356,7 @@ func EvaluatePuzzle():
 			else:
 				bDone = false
 	
+	ShowWinMessage(bDone)
 	return bDone
 
 func _input(event: InputEvent) -> void:

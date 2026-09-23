@@ -25,3 +25,12 @@ position = Vector2(119, 980)
 
 [node name="BlockTile3" parent="." unique_id=706124688 instance=ExtResource("3_6phgx")]
 position = Vector2(442, 980)
+
+[node name="BlockTile4" parent="." unique_id=1845545464 instance=ExtResource("3_6phgx")]
+position = Vector2(432, 132)
+
+[node name="BlockTile5" parent="." unique_id=1295049684 instance=ExtResource("3_6phgx")]
+position = Vector2(269, 129)
+
+[node name="BlockTile6" parent="." unique_id=1332539876 instance=ExtResource("3_6phgx")]
+position = Vector2(120, 132)
