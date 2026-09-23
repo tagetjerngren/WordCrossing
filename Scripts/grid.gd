@@ -19,6 +19,32 @@ var HintTitles : Array[String] = []
 
 var CurrentHighlight : Constants.Highlight = Constants.Highlight.Inactive
 
+func SetColumnInvalid(Index : int, Invalid : bool):
+	for i in range(Index, TILE_COUNT, GRID_WIDTH):
+		if Tiles[i].GetBlocked():
+			break
+		Tiles[i].SetInvalidWord(Invalid)
+	
+	# Grow up
+	for i in range(Index, -1, -GRID_WIDTH):
+		if Tiles[i].GetBlocked():
+			break
+		Tiles[i].SetInvalidWord(Invalid)
+
+func SetRowInvalid(Index : int, Invalid : bool):
+	var RowStart = Index - (Index % GRID_WIDTH) - 1
+	var RowEnd = RowStart + GRID_WIDTH + 1
+	
+	for i in range(Index, RowEnd):
+		if Tiles[i].GetBlocked():
+			break
+		Tiles[i].SetInvalidWord(Invalid)
+	
+	for i in range(Index, RowStart, -1):
+		if Tiles[i].GetBlocked():
+			break
+		Tiles[i].SetInvalidWord(Invalid)
+		
 #Change the principile to be grow down, then grow up, stop at blocks
 func SetColumnState(State):
 	#var Column = ActiveIndex % GRID_HEIGHT
@@ -204,14 +230,127 @@ func SetTileNumbers():
 			
 			Number += 1
 
+var WordList : PackedStringArray
+
+var WordMap : Dictionary[String, bool]
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	SpawnGrid()
 	SetTileNumbers()
 	$"../Hint".PopulateHintList(HintTitles)
+	var file = FileAccess.open("res://words.txt", FileAccess.READ)
+	var Words = file.get_as_text()
+	WordList = Words.split("\n")
+	
+	# Make it lowercase so our comparisons work
+	for i in range(WordList.size()):
+		WordList[i] = WordList[i].to_lower()
+		
+	#WordMap.set(WordList, true)
+	#print(WordList)
+	#print(WordList.has("war"))
+	#print("dfsdf" in content)
 
 func SetHintList():
 	$"../Hint".PopulateHintList(HintTitles)
+
+func ShowWordWarning(show : bool):
+	if show:
+		$NotWordWarning.show()
+	else:
+		$NotWordWarning.hide()
+
+func EvaluateRow(CheckPoint : int):
+	var RowStart = CheckPoint - (CheckPoint % GRID_WIDTH) - 1
+	var RowEnd = RowStart + GRID_WIDTH + 1
+	
+	var Word = ""
+	
+	for i in range(CheckPoint + 1, RowEnd):
+		if Tiles[i].GetBlocked():
+			break
+		if Tiles[i].GetCharacter() == "":
+			return [false]
+		Word += Tiles[i].GetCharacter()
+	
+	for i in range(CheckPoint, RowStart, -1):
+		if Tiles[i].GetBlocked():
+			break
+		if Tiles[i].GetCharacter() == "":
+			return [false]
+		Word = Tiles[i].GetCharacter() + Word
+	
+	return [true, Word]
+
+func EvaluateColumn(CheckPoint : int):
+	var Word = ""
+	# Grow Down
+	for i in range(CheckPoint + GRID_WIDTH, TILE_COUNT, GRID_WIDTH):
+		if Tiles[i].GetBlocked():
+			break
+		if Tiles[i].GetCharacter() == "":
+			return [false]
+		Word += Tiles[i].GetCharacter()
+	
+	# Grow up
+	for i in range(CheckPoint, -1, -GRID_WIDTH):
+		if Tiles[i].GetBlocked():
+			break
+		if Tiles[i].GetCharacter() == "":
+			return [false]
+		Word = Tiles[i].GetCharacter() + Word
+	return [true, Word]
+
+#Use THING, iterate over it and use the above functions, if all are true and the words are real then end game
+func EvaluatePuzzle():
+	ShowWordWarning(false)
+	
+	for HintTitle in Thing:
+		#print(HintTitle)
+		if HintTitle[-1] == "D":
+			SetColumnInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, false)
+		elif HintTitle[-1] == "A":
+			SetRowInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, false)
+	
+	#print(Thing)
+	var bDone : bool = true
+	
+	for HintTitle in Thing:
+		#print(HintTitle)
+		if HintTitle[-1] == "D":
+			var Res = EvaluateColumn(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
+			#print(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
+			if Res[0]:
+				print(Res[1].to_lower())
+				#if not (Res[1].to_lower() in WordList):
+				if not WordList.has(Res[1].to_lower()):
+					ShowWordWarning(true)
+					print("SHOW WARNING!")
+					#SetColumnState(Constants.TileState.InvalidWord)
+					#Tiles[Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH].SetInvalidWord(true)
+					SetColumnInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, true)
+					bDone = false
+			else:
+				bDone = false
+				
+		elif HintTitle[-1] == "A":
+			#print(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
+			var Res = EvaluateRow(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
+			if Res[0]:
+				print(Res[1].to_lower())
+				if not WordList.has(Res[1].to_lower()):
+				#if not (Res[1].to_lower() in WordList):
+					ShowWordWarning(true)
+					#SetRowState(Constants.TileState.InvalidWord)
+					#Tiles[Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH].SetInvalidWord(true)
+					SetRowInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, true)
+					print("SHOW WARNING!")
+					bDone = false
+			else:
+				bDone = false
+	
+	return bDone
 
 func _input(event: InputEvent) -> void:
 	if bFocused and event is InputEventKey and event.is_pressed() and !event.is_echo():
@@ -219,6 +358,8 @@ func _input(event: InputEvent) -> void:
 		if label == 4194308:
 			if Tiles[ActiveIndex].GetCharacter() != "":
 				Tiles[ActiveIndex].SetCharacter("")
+				if EvaluatePuzzle():
+					print("Puzzle Done!")
 				return
 			var PrevTile = ActiveIndex
 			if CurrentHighlight == Constants.Highlight.RowActive or CurrentHighlight == Constants.Highlight.ColumnActive:
@@ -228,10 +369,33 @@ func _input(event: InputEvent) -> void:
 					PrevTile -= GRID_WIDTH
 			SetActive(PrevTile)
 			Tiles[ActiveIndex].SetCharacter("")
+			if EvaluatePuzzle():
+					print("Puzzle Done!")
+		# TODO: Evaluate if a word is finished check it against the word list, and if not mark it somehow
+		# TODO: If whole puzzle is finished with acceptable words then finish game
 		if 65 <= label and label <= 90:
+			#ShowWordWarning(false)
 			var NextTile = ActiveIndex
 			if CurrentHighlight == Constants.Highlight.RowActive or CurrentHighlight == Constants.Highlight.ColumnActive:
 				Tiles[ActiveIndex].SetCharacter(OS.get_keycode_string(label))
+				
+				if EvaluatePuzzle():
+					print("Puzzle Done!")
+				#if CurrentHighlight == Constants.Highlight.RowActive:
+					#var Res = EvaluateRow(ActiveIndex)
+					#if Res[0]:
+						#if not (Res[1].to_lower() in WordList):
+							#ShowWordWarning(true)
+				#
+				#if CurrentHighlight == Constants.Highlight.ColumnActive:
+					#var Res = EvaluateColumn(ActiveIndex)
+					#if Res[0]:
+						#if not (Res[1].to_lower() in WordList):
+							#ShowWordWarning(true)
+						#else:
+							#print("True!")
+				
+				# Move to next tile
 				if CurrentHighlight == Constants.Highlight.RowActive:
 					NextTile += 1
 					if NextTile >= TILE_COUNT:

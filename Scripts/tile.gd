@@ -11,8 +11,10 @@ var WordActiveColor : Color = Color(0.991, 1.0, 0.44, 1.0)
 var TileActiveColor : Color = Color(0.451, 0.816, 1.0, 1.0)
 var TileBlockColor : Color = Color()
 var TileHintColor : Color = Color(1.0, 0.81, 0.62, 1.0)
+#var InvalidWordColor : Color = Color(1.0, 0.19, 0.19, 1.0)
 
 var bBlocked : bool = false
+var bInvalidWord : bool = false
 
 @onready var Letter : Label = $Letter
 @onready var TileBackground : ColorRect = $TileBackground
@@ -22,7 +24,7 @@ func _ready() -> void:
 	SetState(CurrentState)
 
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if event is InputEventMouseButton and event.is_pressed() and not bBlocked:
+	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT and not bBlocked:
 		Owner.TileClicked(Index)
 
 
@@ -57,3 +59,11 @@ func GetBlocked():
 
 func SetBlocked(Blocked : bool):
 	bBlocked = Blocked
+
+func SetInvalidWord(Invalid : bool):
+	bInvalidWord = Invalid
+	if Invalid:
+		$InvalidWordWarning.show()
+	else:
+		$InvalidWordWarning.hide()
+		#TileBackground.color = InvalidWordColor

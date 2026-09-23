@@ -51,3 +51,4 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 		
 		$"../Grid".SetTileNumbers()
 		$"../Grid".SetHintList()
+		$"../Grid".EvaluatePuzzle()

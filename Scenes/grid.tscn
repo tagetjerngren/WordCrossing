@@ -4,3 +4,13 @@
 
 [node name="Grid" type="Node2D" unique_id=1413559531]
 script = ExtResource("1_ebq2e")
+
+[node name="NotWordWarning" type="Label" parent="." unique_id=1732586615]
+visible = false
+offset_left = -167.0
+offset_top = -484.0
+offset_right = 162.0
+offset_bottom = -426.0
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 42
+text = "Not In Word List"

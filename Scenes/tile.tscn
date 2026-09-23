@@ -19,6 +19,16 @@ offset_right = 64.0
 offset_bottom = 64.0
 mouse_filter = 2
 
+[node name="InvalidWordWarning" type="ColorRect" parent="." unique_id=1038738446]
+visible = false
+offset_left = -38.0
+offset_top = -48.000004
+offset_right = 90.0
+offset_bottom = -28.000004
+rotation = 0.71585333
+mouse_filter = 2
+color = Color(1, 0, 0, 1)
+
 [node name="Letter" type="Label" parent="." unique_id=1749630014]
 offset_left = -64.0
 offset_top = -64.0
