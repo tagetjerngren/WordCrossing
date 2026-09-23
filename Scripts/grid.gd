@@ -3,6 +3,8 @@ extends Node2D
 const TILE = preload("res://Scenes/tile.tscn")
 var Tiles = []
 
+var bFocused : bool = false
+
 const TILE_WIDTH : int = 128
 const TILE_HEIGHT : int = 128
 const TILE_GAP : int = 2
@@ -41,6 +43,7 @@ func TileClicked(Index):
 	# On click evaluate if the row or column should be highlighted
 	if CurrentHighlight == Constants.Highlight.Inactive:
 		CurrentHighlight = Constants.Highlight.RowActive
+		bFocused = true
 	elif ActiveIndex == Index:
 		if CurrentHighlight == Constants.Highlight.RowActive:
 			CurrentHighlight = Constants.Highlight.ColumnActive
@@ -164,7 +167,7 @@ func UnfocusHintList():
 	$"../Hint".UnfocusList()
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.is_pressed() and !event.is_echo():
+	if bFocused and event is InputEventKey and event.is_pressed() and !event.is_echo():
 		var label = DisplayServer.keyboard_get_label_from_physical(event.physical_keycode)
 		if label == 4194308:
 			if Tiles[ActiveIndex].GetCharacter() != "":
@@ -193,3 +196,20 @@ func _input(event: InputEvent) -> void:
 					if NextTile >= TILE_COUNT:
 						NextTile -= (TILE_COUNT - 1)
 			SetActive(NextTile)
+	
+	if event is InputEventMouseButton and event.is_pressed():
+		var Min = position - Vector2(TOTAL_GRID_WIDTH / 2 + (TILE_WIDTH/2), TOTAL_GRID_HEIGHT / 2 + (TILE_WIDTH/2))
+		var Max = position + Vector2(TOTAL_GRID_WIDTH / 2 - (TILE_HEIGHT/2), TOTAL_GRID_HEIGHT / 2 - (TILE_HEIGHT/2))
+		var Mousepos = get_viewport().get_mouse_position()
+		
+		var bWithinX = Min.x <= Mousepos.x and Mousepos.x <= Max.x
+		var bWithinY = Min.y <= Mousepos.y and Mousepos.y <= Max.y
+		var bWithin = bWithinX and bWithinY
+		
+		if (not bWithin):
+			bFocused = false
+			if CurrentHighlight == Constants.Highlight.RowActive:
+				SetRowState(Constants.TileState.Inactive)
+			elif CurrentHighlight == Constants.Highlight.ColumnActive:
+				SetColumnState(Constants.TileState.Inactive)
+			CurrentHighlight = Constants.Highlight.Inactive
