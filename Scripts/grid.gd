@@ -162,9 +162,6 @@ func _ready() -> void:
 
 func SetHintList():
 	$"../Hint".PopulateHintList(HintTitles)
-	
-func UnfocusHintList():
-	$"../Hint".UnfocusList()
 
 func _input(event: InputEvent) -> void:
 	if bFocused and event is InputEventKey and event.is_pressed() and !event.is_echo():

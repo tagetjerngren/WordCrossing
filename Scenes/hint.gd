@@ -18,10 +18,6 @@ func PopulateHintList(strings : Array[String]):
 		Entry.SetTitle(i)
 		Entries.append(Entry)
 
-func UnfocusList():
-	for Entry in Entries:
-		Entry.Unfocus()
-
 func _ready() -> void:
 	pass
 	#PopulateHintList(["1A", "1D", "2A", "2D"])
