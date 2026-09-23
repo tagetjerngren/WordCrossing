@@ -10,15 +10,21 @@ func _ready() -> void:
 var bHeld : bool = false
 var Offset : Vector2 
 var BlockedTile : Tile
+var Spawner : BlockTileSpawn
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if bHeld:
 		position = get_global_mouse_position() - Offset
 
+func DeleteSelf():
+	Spawner.AvailableTiles += 1
+	Spawner.UpdateAvailableTilesText()
+	queue_free()
 
 func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
+		print("In object!")
 		bHeld = true
 		Offset = get_global_mouse_position() - position
 		if BlockedTile != null:
@@ -50,6 +56,8 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 			#closest_tile.Owner.SetTileNumbers()
 			#closest_tile.Owner.SetHintList()
 			BlockedTile = closest_tile
+		else:
+			DeleteSelf()
 		
 		$"../Grid".SetTileNumbers()
 		$"../Grid".SetHintList()

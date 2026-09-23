@@ -146,7 +146,7 @@ func SpawnGrid():
 	
 	# Get all the block tiles and scale them based on the current size of the tiles in the grid
 	for child in get_parent().get_children():
-		if child is BlockTile:
+		if child is BlockTileSpawn:
 			child.scale.x *= TILE_WIDTH / 100.0
 			child.scale.y *= TILE_HEIGHT / 100.0
 	
