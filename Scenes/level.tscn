@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://n67n82bs4lrw" path="res://Scenes/grid.tscn" id="1_k5f4k"]
 [ext_resource type="PackedScene" uid="uid://c4unaponxdrp0" path="res://Scenes/hint.tscn" id="2_6phgx"]
 [ext_resource type="PackedScene" uid="uid://hkugd1j5ibmb" path="res://Scenes/block_tile_spawn.tscn" id="3_6phgx"]
+[ext_resource type="PackedScene" uid="uid://c11mqpcontp3k" path="res://Scenes/word_start_tile.tscn" id="4_81xng"]
 
 [node name="Level" type="Node" unique_id=39279757]
 
@@ -18,3 +19,6 @@ color = Color(0.4392, 0.72, 0.52812004, 1)
 
 [node name="BlockTileSpawn" parent="." unique_id=553679701 instance=ExtResource("3_6phgx")]
 position = Vector2(261, 910)
+
+[node name="WordStartTile" parent="." unique_id=2075037299 instance=ExtResource("4_81xng")]
+position = Vector2(488, 923)

@@ -176,7 +176,10 @@ func SpawnGrid():
 		if child is BlockTileSpawn:
 			child.scale.x *= TILE_WIDTH / 100.0
 			child.scale.y *= TILE_HEIGHT / 100.0
-	
+		if child is WordStartTile:
+			child.scale.x *= TILE_WIDTH / 100.0
+			child.scale.y *= TILE_HEIGHT / 100.0
+			
 	for i in range(TILE_COUNT):
 		var new_tile : Tile = TILE.instantiate()
 		add_child(new_tile)
