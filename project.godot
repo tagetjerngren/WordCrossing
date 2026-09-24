@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="WordCrossing"
-run/main_scene="uid://bqeifu14yvc5k"
+run/main_scene="uid://dykya3a2dqoe7"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 

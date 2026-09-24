@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://c74fkn6hk042d"]
+
+[ext_resource type="PackedScene" uid="uid://cy4qo2joj2i5u" path="res://Scenes/word_crossing_manager.tscn" id="1_5pu08"]
+[ext_resource type="PackedScene" uid="uid://hkugd1j5ibmb" path="res://Scenes/block_tile_spawn.tscn" id="2_na6m6"]
+[ext_resource type="PackedScene" uid="uid://dwjjijwlmk0kx" path="res://level_5.tscn" id="2_xcfcc"]
+
+[node name="Level_1" type="Node" unique_id=241500927]
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=30525148]
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 1
+color = Color(0.4392, 0.72, 0.52812004, 1)
+
+[node name="WordCrossingManager" parent="." unique_id=1982975088 instance=ExtResource("1_5pu08")]
+LevelLayout = "    *               *    "
+NextLevel = ExtResource("2_xcfcc")
+
+[node name="Grid" parent="WordCrossingManager" index="0" unique_id=48706003]
+offset_left = 487.0
+offset_top = 79.0
+offset_right = 487.0
+offset_bottom = 79.0
+
+[node name="BlockTileSpawn" parent="." unique_id=553679701 instance=ExtResource("2_na6m6")]
+position = Vector2(243, 341)
+
+[editable path="WordCrossingManager"]

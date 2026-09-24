@@ -61,6 +61,7 @@ func GetBlocked():
 
 func SetBlocked(Blocked : bool):
 	bBlocked = Blocked
+	TileBackground.color = TileBlockColor
 
 func SetWordStart(WordStart : bool, InDirection : Constants.Highlight):
 	bWordStart = WordStart

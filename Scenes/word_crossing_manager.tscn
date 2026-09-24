@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cy4qo2joj2i5u"]
+
+[ext_resource type="Script" uid="uid://dsq3ou5x8jx8t" path="res://Scripts/word_crossing_manager.gd" id="1_836py"]
+[ext_resource type="PackedScene" uid="uid://n67n82bs4lrw" path="res://Scenes/grid.tscn" id="2_i0r7j"]
+
+[node name="WordCrossingManager" type="Control" unique_id=1982975088]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_836py")
+
+[node name="Grid" parent="." unique_id=48706003 instance=ExtResource("2_i0r7j")]
+layout_mode = 0
+
+[connection signal="GameWon" from="Grid" to="." method="_on_grid_game_won"]

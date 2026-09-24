@@ -8,15 +8,18 @@ var bFocused : bool = false
 var TILE_WIDTH : int = 128
 var TILE_HEIGHT : int = 128
 const TILE_GAP : int = 5
-const GRID_WIDTH : int = 5
-const GRID_HEIGHT : int = 5
+@export var GRID_WIDTH : int = 5
+@export var GRID_HEIGHT : int = 5
 const GRID_PADDING : int = 20
 @onready var TOTAL_GRID_WIDTH : int = $GridBackground.size.x
 @onready var TOTAL_GRID_HEIGHT : int = $GridBackground.size.y
-const TILE_COUNT : int = GRID_WIDTH * GRID_HEIGHT
+var TILE_COUNT : int = GRID_WIDTH * GRID_HEIGHT
 
-var ActiveIndex : int = 0
+var ActiveIndex : int = -1
 var HintTitles : Array[String] = []
+
+#signal game_won
+signal GameWon
 
 var CurrentHighlight : Constants.Highlight = Constants.Highlight.Inactive
 
@@ -77,13 +80,15 @@ func SetRowState(State):
 func TileClicked(Index):
 	# Deactive the old selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		var Row = ActiveIndex / GRID_HEIGHT
-		for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
-			Tiles[i].SetState(Constants.TileState.Inactive)
+		SetRowState(Constants.Highlight.Inactive)
+		#var Row = ActiveIndex / GRID_HEIGHT
+		#for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
+			#Tiles[i].SetState(Constants.TileState.Inactive)
 	elif CurrentHighlight == Constants.Highlight.ColumnActive:
-		var Column = ActiveIndex % GRID_HEIGHT
-		for i in range(Column, TILE_COUNT, GRID_WIDTH):
-			Tiles[i].SetState(Constants.TileState.Inactive)
+		SetColumnState(Constants.Highlight.Inactive)
+		#var Column = ActiveIndex % GRID_HEIGHT
+		#for i in range(Column, TILE_COUNT, GRID_WIDTH):
+			#Tiles[i].SetState(Constants.TileState.Inactive)
 
 	# On click evaluate if the row or column should be highlighted
 	if CurrentHighlight == Constants.Highlight.Inactive:
@@ -99,17 +104,14 @@ func TileClicked(Index):
 
 func SetActive(Index):
 	# Deactive the old selected tile
-	Tiles[ActiveIndex].SetState(Constants.TileState.Inactive)
+	if ActiveIndex != -1:
+		Tiles[ActiveIndex].SetState(Constants.TileState.Inactive)
 	
 		# Deactive the old selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		var Row = ActiveIndex / GRID_HEIGHT
-		for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
-			Tiles[i].SetState(Constants.TileState.Inactive)
+		SetRowState(Constants.Highlight.Inactive)
 	elif CurrentHighlight == Constants.Highlight.ColumnActive:
-		var Column = ActiveIndex % GRID_HEIGHT
-		for i in range(Column, TILE_COUNT, GRID_WIDTH):
-			Tiles[i].SetState(Constants.TileState.Inactive)
+		SetColumnState(Constants.Highlight.Inactive)
 	
 	ActiveIndex = Index
 	
@@ -172,7 +174,8 @@ func SpawnGrid():
 	TILE_HEIGHT = (TOTAL_GRID_HEIGHT - 2 * GRID_PADDING - (GRID_HEIGHT - 1) * TILE_GAP) / GRID_HEIGHT
 	
 	# Get all the block tiles and scale them based on the current size of the tiles in the grid
-	for child in get_parent().get_children():
+	
+	for child in get_parent().get_parent().get_children():
 		if child is BlockTileSpawn:
 			child.scale.x *= TILE_WIDTH / 100.0
 			child.scale.y *= TILE_HEIGHT / 100.0
@@ -195,6 +198,11 @@ func SpawnGrid():
 		new_tile.Owner = self
 		
 		Tiles.append(new_tile)
+
+func LoadGrid(Content : String):
+	for i in range(len(Content)):
+		if Content[i] == "*":
+			Tiles[i].SetBlocked(true)
 
 var Thing : Dictionary[String, Vector2] = {}
 
@@ -265,9 +273,10 @@ var WordList : PackedStringArray
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	SpawnGrid()
-	SetTileNumbers()
-	$"../Hint".PopulateHintList(HintTitles)
+	#SpawnGrid()
+	#SetTileNumbers()
+	##$"../Hint".PopulateHintList(HintTitles)
+	#print("Here!")
 	var file = FileAccess.open("res://words.txt", FileAccess.READ)
 	var Words = file.get_as_text()
 	WordList = Words.split("\n")
@@ -278,7 +287,8 @@ func _ready() -> void:
 
 
 func SetHintList():
-	$"../Hint".PopulateHintList(HintTitles)
+	if $"../Hint":
+		$"../Hint".PopulateHintList(HintTitles)
 
 func ShowWordWarning(show : bool):
 	if show:
@@ -288,11 +298,13 @@ func ShowWordWarning(show : bool):
 
 func ShowWinMessage(show : bool):
 	if show:
+		$NextLevelButton.visible = true
 		$WinMessage.show()
 		$Button.visible = true
 	else:
 		$WinMessage.hide()
 		$Button.visible = false
+		$NextLevelButton.visible = false
 
 func EvaluateRow(CheckPoint : int):
 	var RowStart = CheckPoint - (CheckPoint % GRID_WIDTH) - 1
@@ -527,3 +539,7 @@ func _input(event: InputEvent) -> void:
 
 func _on_button_button_down() -> void:
 	SaveCrossword()
+
+
+func _on_next_level_button_button_down() -> void:
+	GameWon.emit()

@@ -18,9 +18,9 @@ func _process(delta: float) -> void:
 		position = get_global_mouse_position() - Offset
 		
 		# Gross way to remove focus from the grid while tile is held
-		$"../Grid".bFocused = false
-		$"../Grid".SetRowState(Constants.Highlight.Inactive)
-		$"../Grid".SetColumnState(Constants.Highlight.Inactive)
+		$"../WordCrossingManager/Grid".bFocused = false
+		$"../WordCrossingManager/Grid".SetRowState(Constants.Highlight.Inactive)
+		$"../WordCrossingManager/Grid".SetColumnState(Constants.Highlight.Inactive)
 
 func DeleteSelf():
 	Spawner.AvailableTiles += 1
@@ -64,10 +64,10 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 		else:
 			DeleteSelf()
 		
-		$"../Grid".SetTileNumbers()
-		$"../Grid".SetHintList()
-		$"../Grid".EvaluatePuzzle()
+		$"../WordCrossingManager/Grid".SetTileNumbers()
+		$"../WordCrossingManager/Grid".SetHintList()
+		$"../WordCrossingManager/Grid".EvaluatePuzzle()
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
 		DeleteSelf()
-		$"../Grid".EvaluatePuzzle()
+		$"../WordCrossingManager/Grid".EvaluatePuzzle()
