@@ -383,49 +383,96 @@ func EvaluatePuzzle():
 	ShowWinMessage(bDone)
 	return bDone
 
+func GoToNextTile():
+	var Tries = TILE_COUNT
+	
+	var NextTile = ActiveIndex
+	if CurrentHighlight == Constants.Highlight.RowActive:
+		NextTile += 1
+		if NextTile >= TILE_COUNT:
+			NextTile = 0
+			SetRowState(Constants.Highlight.Inactive)
+			CurrentHighlight = Constants.Highlight.ColumnActive
+		while Tiles[NextTile].GetBlocked() or Tiles[NextTile].GetCharacter() != "":
+			NextTile += 1
+			if NextTile >= TILE_COUNT:
+				NextTile = 0
+				SetRowState(Constants.Highlight.Inactive)
+				CurrentHighlight = Constants.Highlight.ColumnActive
+			Tries -= 1
+			if Tries <= 0:
+				return
+	elif CurrentHighlight == Constants.Highlight.ColumnActive:
+		NextTile += GRID_WIDTH
+		if NextTile == TILE_COUNT + GRID_WIDTH - 1:
+			NextTile = 0
+			SetColumnState(Constants.Highlight.Inactive)
+			CurrentHighlight = Constants.Highlight.RowActive
+		elif NextTile >= TILE_COUNT:
+			NextTile -= (TILE_COUNT - 1)
+		while Tiles[NextTile].GetBlocked() or Tiles[NextTile].GetCharacter() != "":
+			NextTile += GRID_WIDTH
+			if NextTile >= TILE_COUNT:
+				NextTile -= (TILE_COUNT - 1)
+			Tries -= 1
+			if Tries <= 0:
+				return
+	SetActive(NextTile)
+
+func GoToPreviousTile():
+	var PrevTile = ActiveIndex
+	
+	if CurrentHighlight == Constants.Highlight.RowActive:
+		PrevTile -= 1
+		if PrevTile < 0:
+			PrevTile = TILE_COUNT - 1
+			SetRowState(Constants.Highlight.Inactive)
+			CurrentHighlight = Constants.Highlight.ColumnActive
+		while Tiles[PrevTile].GetBlocked():
+			PrevTile -= 1
+			if PrevTile <= 0:
+				PrevTile = TILE_COUNT - 1
+				SetRowState(Constants.Highlight.Inactive)
+				CurrentHighlight = Constants.Highlight.ColumnActive
+	elif CurrentHighlight == Constants.Highlight.ColumnActive:
+		if PrevTile == 0:
+			SetColumnState(Constants.Highlight.Inactive)
+			CurrentHighlight = Constants.Highlight.RowActive
+			PrevTile = TILE_COUNT - 1
+		elif PrevTile / GRID_HEIGHT == 0:
+			PrevTile += TILE_COUNT - GRID_WIDTH - 1
+		else:
+			PrevTile -= GRID_WIDTH
+		while Tiles[PrevTile].GetBlocked():
+			if PrevTile == 0:
+				SetColumnState(Constants.Highlight.Inactive)
+				CurrentHighlight = Constants.Highlight.RowActive
+				PrevTile = TILE_COUNT - 1
+			elif PrevTile / GRID_HEIGHT == 0:
+				PrevTile += TILE_COUNT - GRID_WIDTH - 1
+			else:
+				PrevTile -= GRID_WIDTH
+	SetActive(PrevTile)
+
 func _input(event: InputEvent) -> void:
 	if bFocused and event is InputEventKey and event.is_pressed() and !event.is_echo():
 		var label = DisplayServer.keyboard_get_label_from_physical(event.physical_keycode)
 		if label == 4194308:
 			if Tiles[ActiveIndex].GetCharacter() != "":
 				Tiles[ActiveIndex].SetCharacter("")
-				if EvaluatePuzzle():
-					print("Puzzle Done!")
+				EvaluatePuzzle()
 				return
-			var PrevTile = ActiveIndex
-			if CurrentHighlight == Constants.Highlight.RowActive or CurrentHighlight == Constants.Highlight.ColumnActive:
-				if CurrentHighlight == Constants.Highlight.RowActive:
-					PrevTile -= 1
-				if CurrentHighlight == Constants.Highlight.ColumnActive:
-					PrevTile -= GRID_WIDTH
-			SetActive(PrevTile)
+			GoToPreviousTile()
 			Tiles[ActiveIndex].SetCharacter("")
 			EvaluatePuzzle()
 		if 65 <= label and label <= 90:
-			var NextTile = ActiveIndex
-			if CurrentHighlight == Constants.Highlight.RowActive or CurrentHighlight == Constants.Highlight.ColumnActive:
-				Tiles[ActiveIndex].SetCharacter(OS.get_keycode_string(label))
-				
-				EvaluatePuzzle()
-				
-				# Move to next tile
-				if CurrentHighlight == Constants.Highlight.RowActive:
-					NextTile += 1
-					if NextTile >= TILE_COUNT:
-						NextTile = 0
-						SetRowState(Constants.Highlight.Inactive)
-						CurrentHighlight = Constants.Highlight.ColumnActive
-				elif CurrentHighlight == Constants.Highlight.ColumnActive:
-					NextTile += GRID_WIDTH
-					if NextTile >= TILE_COUNT:
-						NextTile -= (TILE_COUNT - 1)
-			SetActive(NextTile)
+			Tiles[ActiveIndex].SetCharacter(OS.get_keycode_string(label))
+			if not EvaluatePuzzle():
+				GoToNextTile()
 	
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
 		var Min = position
 		var Max = position + $GridBackground.size
-		#var Min = position - Vector2(TOTAL_GRID_WIDTH / 2 + (TILE_WIDTH/2), TOTAL_GRID_HEIGHT / 2 + (TILE_WIDTH/2))
-		#var Max = position + Vector2(TOTAL_GRID_WIDTH / 2 - (TILE_HEIGHT/2), TOTAL_GRID_HEIGHT / 2 - (TILE_HEIGHT/2))
 		var Mousepos = get_viewport().get_mouse_position()
 		
 		var bWithinX = Min.x <= Mousepos.x and Mousepos.x <= Max.x
