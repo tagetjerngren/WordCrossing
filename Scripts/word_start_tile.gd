@@ -4,13 +4,19 @@ extends Area2D
 
 var bHeld : bool = false
 var CoveredTile : Tile 
-
+var Spawner : WordStartTileSpawn
 var CurrentDirection = Constants.Highlight.ColumnActive
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if bHeld:
 		position = get_global_mouse_position()
+		
+		# Gross way to remove focus from the grid while tile is held
+		$"../Grid".bFocused = false
+		$"../Grid".SetRowState(Constants.Highlight.Inactive)
+		$"../Grid".SetColumnState(Constants.Highlight.Inactive)
+		
 		if Input.is_action_just_pressed("RotateWordStartTile"):
 			if CurrentDirection == Constants.Highlight.ColumnActive:
 				rotate(-PI / 2)
@@ -28,7 +34,7 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.is_pressed():
 		bHeld = true
 		if CoveredTile != null:
-			CoveredTile.SetBlocked(false)
+			CoveredTile.SetWordStart(false, Constants.Highlight.Inactive)
 	
 	if event is InputEventMouseButton and event.is_released():
 		bHeld = false
@@ -52,9 +58,12 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 					closest_tile = tile
 					distance = tile.global_position.distance_to(position)
 			global_position = closest_tile.global_position
+			closest_tile.SetWordStart(true, CurrentDirection)
 			#closest_tile.SetBlocked(true)
 			#closest_tile.Owner.SetTileNumbers()
 			#closest_tile.Owner.SetHintList()
 			CoveredTile = closest_tile
 		else:
 			DeleteSelf()
+		
+		$"../Grid".EvaluatePuzzle()

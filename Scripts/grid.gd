@@ -176,7 +176,7 @@ func SpawnGrid():
 		if child is BlockTileSpawn:
 			child.scale.x *= TILE_WIDTH / 100.0
 			child.scale.y *= TILE_HEIGHT / 100.0
-		if child is WordStartTile:
+		if child is WordStartTileSpawn:
 			child.scale.x *= TILE_WIDTH / 100.0
 			child.scale.y *= TILE_HEIGHT / 100.0
 			
@@ -304,17 +304,37 @@ func EvaluateRow(CheckPoint : int):
 		if Tiles[i].GetBlocked():
 			break
 		if Tiles[i].GetCharacter() == "":
-			return [false]
+			return [false, false]
+		
+		var Res = Tiles[i].GetWordStart()
+		var bWordStart = Res[0]
+		var WordDirection = Res[1]
+		if bWordStart and WordDirection == Constants.Highlight.RowActive:
+			Word += ","
+		
 		Word += Tiles[i].GetCharacter()
 	
 	for i in range(CheckPoint, RowStart, -1):
 		if Tiles[i].GetBlocked():
 			break
 		if Tiles[i].GetCharacter() == "":
-			return [false]
+			return [false, false]
+		
+		var Res = Tiles[i].GetWordStart()
+		var bWordStart = Res[0]
+		var WordDirection = Res[1]
+		if bWordStart and WordDirection == Constants.Highlight.RowActive:
+			Word += ","
+			
 		Word = Tiles[i].GetCharacter() + Word
 	
-	return [true, Word]
+	var bWordsInWordList = true
+	var Words = Word.split(",")
+	for w in Words:
+		if not (WordList.has(w.to_lower())):
+			bWordsInWordList = false
+	
+	return [true, bWordsInWordList]
 
 func EvaluateColumn(CheckPoint : int):
 	var Word = ""
@@ -323,7 +343,15 @@ func EvaluateColumn(CheckPoint : int):
 		if Tiles[i].GetBlocked():
 			break
 		if Tiles[i].GetCharacter() == "":
-			return [false]
+			return [false, false]
+		
+		# If it's a word start add a comma
+		var Res = Tiles[i].GetWordStart()
+		var bWordStart = Res[0]
+		var WordDirection = Res[1]
+		if bWordStart and WordDirection == Constants.Highlight.ColumnActive:
+			Word += ","
+			
 		Word += Tiles[i].GetCharacter()
 	
 	# Grow up
@@ -331,54 +359,60 @@ func EvaluateColumn(CheckPoint : int):
 		if Tiles[i].GetBlocked():
 			break
 		if Tiles[i].GetCharacter() == "":
-			return [false]
+			return [false, false]
+		
+		# If it's a word start add a comma
+		var Res = Tiles[i].GetWordStart()
+		var bWordStart = Res[0]
+		var WordDirection = Res[1]
+		if bWordStart and WordDirection == Constants.Highlight.ColumnActive:
+			Word += ","
+			
 		Word = Tiles[i].GetCharacter() + Word
-	return [true, Word]
+	
+	#print(Word)
+	var bWordsInWordList = true
+	var Words = Word.split(",")
+	#print(Words)
+	for w in Words:
+		if not (WordList.has(w.to_lower())):
+			bWordsInWordList = false
+	
+	return [true, bWordsInWordList]
 
 #Use THING, iterate over it and use the above functions, if all are true and the words are real then end game
 func EvaluatePuzzle():
 	ShowWordWarning(false)
 	
 	for HintTitle in Thing:
-		#print(HintTitle)
 		if HintTitle[-1] == "D":
 			SetColumnInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, false)
 		elif HintTitle[-1] == "A":
 			SetRowInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, false)
 	
-	#print(Thing)
 	var bDone : bool = true
 	
 	for HintTitle in Thing:
-		#print(HintTitle)
 		if HintTitle[-1] == "D":
 			var Res = EvaluateColumn(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
-			#print(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
-			if Res[0]:
-				print(Res[1].to_lower())
-				#if not (Res[1].to_lower() in WordList):
-				if not WordList.has(Res[1].to_lower()):
+			var bWordDone = Res[0]
+			var bWordInWordList = Res[1]
+			if bWordDone:
+				if not bWordInWordList:
 					ShowWordWarning(true)
-					print("SHOW WARNING!")
-					#SetColumnState(Constants.TileState.InvalidWord)
-					#Tiles[Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH].SetInvalidWord(true)
 					SetColumnInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, true)
 					bDone = false
 			else:
 				bDone = false
 				
 		elif HintTitle[-1] == "A":
-			#print(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
 			var Res = EvaluateRow(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH)
-			if Res[0]:
-				print(Res[1].to_lower())
-				if not WordList.has(Res[1].to_lower()):
-				#if not (Res[1].to_lower() in WordList):
+			var bWordDone = Res[0]
+			var bWordInWordList = Res[1]
+			if bWordDone:
+				if not bWordInWordList:
 					ShowWordWarning(true)
-					#SetRowState(Constants.TileState.InvalidWord)
-					#Tiles[Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH].SetInvalidWord(true)
 					SetRowInvalid(Thing[HintTitle].x + Thing[HintTitle].y * GRID_WIDTH, true)
-					print("SHOW WARNING!")
 					bDone = false
 			else:
 				bDone = false

@@ -16,6 +16,9 @@ var TileHintColor : Color = Color(1.0, 0.81, 0.62, 1.0)
 var bBlocked : bool = false
 var bInvalidWord : bool = false
 
+var bWordStart : bool = false
+var WordStartDirection : Constants.Highlight = Constants.Highlight.Inactive
+
 @onready var Letter : Label = $Letter
 @onready var TileBackground : ColorRect = $TileBackground
 @onready var WordNumber : Label = $WordNumber
@@ -58,6 +61,13 @@ func GetBlocked():
 
 func SetBlocked(Blocked : bool):
 	bBlocked = Blocked
+
+func SetWordStart(WordStart : bool, InDirection : Constants.Highlight):
+	bWordStart = WordStart
+	WordStartDirection = InDirection
+
+func GetWordStart():
+	return [bWordStart, WordStartDirection]
 
 func SetInvalidWord(Invalid : bool):
 	bInvalidWord = Invalid

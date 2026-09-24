@@ -16,6 +16,11 @@ var Spawner : BlockTileSpawn
 func _process(delta: float) -> void:
 	if bHeld:
 		position = get_global_mouse_position() - Offset
+		
+		# Gross way to remove focus from the grid while tile is held
+		$"../Grid".bFocused = false
+		$"../Grid".SetRowState(Constants.Highlight.Inactive)
+		$"../Grid".SetColumnState(Constants.Highlight.Inactive)
 
 func DeleteSelf():
 	Spawner.AvailableTiles += 1
