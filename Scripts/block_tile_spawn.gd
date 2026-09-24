@@ -8,8 +8,13 @@ var BLOCK_TILE = preload("res://Scenes/block_tile.tscn")
 
 func UpdateAvailableTilesText():
 	$ColorRect2/Label.text = str(AvailableTiles)
-	
-
+	if AvailableTiles == 0:
+		$ColorRect.color = Color(0.166, 0.166, 0.166, 1.0)
+		$ColorRect2.color = Color(0.753, 0.0, 0.0, 1.0)
+	else:
+		$ColorRect.color = Color(0.0, 0.0, 0.0, 1.0)
+		$ColorRect2.color = Color(0.243, 0.243, 0.243, 1.0)
+		
 func _ready() -> void:
 	UpdateAvailableTilesText()
 	
