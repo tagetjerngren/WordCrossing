@@ -39,3 +39,15 @@ offset_bottom = -15.0
 theme_override_colors/font_color = Color(0.0333333, 1, 0, 1)
 theme_override_font_sizes/font_size = 42
 text = "Valid Solution!"
+
+[node name="Button" type="Button" parent="." unique_id=1538703840]
+visible = false
+layout_mode = 0
+offset_left = 600.0
+offset_top = -58.0
+offset_right = 731.0
+offset_bottom = -27.0
+tooltip_text = "Fill in the button"
+text = "Save Crossword"
+
+[connection signal="button_down" from="Button" to="." method="_on_button_button_down"]

@@ -14,6 +14,9 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
 		$TextEdit.release_focus()
 
+func GetHint():
+	return $Label.text + "-" + $TextEdit.text
+
 func _on_text_edit_focus_entered() -> void:
 	print($Label.text)
 	Owner.HintFocused($Label.text)

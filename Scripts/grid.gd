@@ -140,6 +140,33 @@ func HintFocused(Hint : String):
 		SetColumnState(Constants.TileState.HintActive)
 		CurrentHighlight = Constants.Highlight.ColumnActive
 
+func SaveCrossword():
+	var Content = ""
+	
+	for i in range(TILE_COUNT):
+		if i > 0 and i % GRID_WIDTH == 0:
+			Content += "\n"
+		
+		if Tiles[i].GetBlocked():
+			Content += "*"
+			continue
+		
+		Content += Tiles[i].GetCharacter()
+	
+	Content += "\n"
+	
+	var Hints = $"../Hint".GetHints()
+	
+	for Hint in Hints:
+		Content += ":" + Hint
+	
+	print(Content)
+	
+	var CrosswordName = "test"
+	
+	var file = FileAccess.open("user://" + CrosswordName + ".txt", FileAccess.WRITE)
+	file.store_string(Content)
+
 func SpawnGrid():
 	TILE_WIDTH = (TOTAL_GRID_WIDTH - 2 * GRID_PADDING - (GRID_WIDTH - 1) * TILE_GAP) / GRID_WIDTH
 	TILE_HEIGHT = (TOTAL_GRID_HEIGHT - 2 * GRID_PADDING - (GRID_HEIGHT - 1) * TILE_GAP) / GRID_HEIGHT
@@ -259,8 +286,10 @@ func ShowWordWarning(show : bool):
 func ShowWinMessage(show : bool):
 	if show:
 		$WinMessage.show()
+		$Button.visible = true
 	else:
 		$WinMessage.hide()
+		$Button.visible = false
 
 func EvaluateRow(CheckPoint : int):
 	var RowStart = CheckPoint - (CheckPoint % GRID_WIDTH) - 1
@@ -410,3 +439,7 @@ func _input(event: InputEvent) -> void:
 			elif CurrentHighlight == Constants.Highlight.ColumnActive:
 				SetColumnState(Constants.TileState.Inactive)
 			CurrentHighlight = Constants.Highlight.Inactive
+
+
+func _on_button_button_down() -> void:
+	SaveCrossword()

@@ -17,5 +17,13 @@ func PopulateHintList(strings : Array[String]):
 		Entry.SetOwner(self)
 		Entries.append(Entry)
 
+func GetHints() -> Array[String]:
+	var Hints : Array[String] = []
+	
+	for Entry in Entries:
+		Hints.append(Entry.GetHint())
+	
+	return Hints
+
 func HintFocused(Hint : String):
 	$"../Grid".HintFocused(Hint)
