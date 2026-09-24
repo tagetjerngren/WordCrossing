@@ -26,8 +26,8 @@ func _process(delta: float) -> void:
 				CurrentDirection = Constants.Highlight.ColumnActive
 
 func DeleteSelf():
-	#Spawner.AvailableTiles += 1
-	#Spawner.UpdateAvailableTilesText()
+	Spawner.AvailableTiles += 1
+	Spawner.UpdateAvailableTilesText()
 	queue_free()
 
 func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
@@ -59,11 +59,12 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 					distance = tile.global_position.distance_to(position)
 			global_position = closest_tile.global_position
 			closest_tile.SetWordStart(true, CurrentDirection)
-			#closest_tile.SetBlocked(true)
-			#closest_tile.Owner.SetTileNumbers()
-			#closest_tile.Owner.SetHintList()
 			CoveredTile = closest_tile
 		else:
 			DeleteSelf()
 		
+		$"../Grid".EvaluatePuzzle()
+	
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
+		DeleteSelf()
 		$"../Grid".EvaluatePuzzle()

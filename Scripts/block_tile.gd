@@ -67,3 +67,7 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 		$"../Grid".SetTileNumbers()
 		$"../Grid".SetHintList()
 		$"../Grid".EvaluatePuzzle()
+		
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
+		DeleteSelf()
+		$"../Grid".EvaluatePuzzle()

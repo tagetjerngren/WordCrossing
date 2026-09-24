@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bxvye3lxwcbq1"]
 
 [ext_resource type="Script" uid="uid://dv74tt2arx8b4" path="res://Scripts/block_tile.gd" id="1_xv6c8"]
+[ext_resource type="Texture2D" uid="uid://cm5qh8pwsfu6v" path="res://icon.svg" id="2_ggx4g"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_20e5e"]
 size = Vector2(100, 100)
@@ -18,5 +19,9 @@ offset_right = 50.0
 offset_bottom = 50.0
 mouse_filter = 2
 color = Color(0, 0, 0, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1607324829]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_ggx4g")
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]

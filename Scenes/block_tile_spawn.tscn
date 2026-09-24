@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://hkugd1j5ibmb"]
 
 [ext_resource type="Script" uid="uid://bx21ednxdp6it" path="res://Scripts/block_tile_spawn.gd" id="1_4trra"]
+[ext_resource type="Texture2D" uid="uid://cm5qh8pwsfu6v" path="res://icon.svg" id="2_j6wwc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fpc0v"]
 size = Vector2(100, 100)
@@ -34,5 +35,9 @@ offset_bottom = 40.0
 text = "3"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=74152027]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_j6wwc")
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]

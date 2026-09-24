@@ -19,7 +19,7 @@ func _ready() -> void:
 	UpdateAvailableTilesText()
 	
 func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
-	if event is InputEventMouseButton and event.is_pressed() and AvailableTiles > 0:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed() and AvailableTiles > 0:
 		var block_tile : BlockTile = BLOCK_TILE.instantiate()
 		get_parent().add_child(block_tile)
 		block_tile.global_position = get_viewport().get_mouse_position()
