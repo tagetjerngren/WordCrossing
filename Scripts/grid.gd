@@ -81,6 +81,47 @@ func SetColumnState(State):
 			break
 		Tiles[i].SetState(State)
 
+func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("ui_left"):
+		if CurrentHighlight != Constants.Highlight.RowActive:
+			SetColumnState(Constants.TileState.Inactive)
+			CurrentHighlight = Constants.Highlight.RowActive
+			SetActive(ActiveIndex)
+		else:
+			var x = ActiveIndex % GRID_WIDTH
+			if x > 0 and not Tiles[ActiveIndex - 1].GetBlocked():
+				ActiveIndex -= 1
+				SetActive(ActiveIndex)
+	if Input.is_action_just_pressed("ui_right"):
+		if CurrentHighlight != Constants.Highlight.RowActive:
+			SetColumnState(Constants.TileState.Inactive)
+			CurrentHighlight = Constants.Highlight.RowActive
+			SetActive(ActiveIndex)
+		else:
+			var x = ActiveIndex % GRID_WIDTH
+			if x < GRID_WIDTH and not Tiles[ActiveIndex + 1].GetBlocked():
+				ActiveIndex += 1
+				SetActive(ActiveIndex)
+	if Input.is_action_just_pressed("ui_up"):
+		if CurrentHighlight != Constants.Highlight.ColumnActive:
+			SetRowState(Constants.TileState.Inactive)
+			CurrentHighlight = Constants.Highlight.ColumnActive
+			SetActive(ActiveIndex)
+		else:
+			var y = ActiveIndex / GRID_WIDTH
+			if y > 0 and not Tiles[ActiveIndex - GRID_WIDTH].GetBlocked():
+				ActiveIndex -= GRID_WIDTH
+				SetActive(ActiveIndex)
+	if Input.is_action_just_pressed("ui_down"):
+		if CurrentHighlight != Constants.Highlight.ColumnActive:
+			SetRowState(Constants.TileState.Inactive)
+			CurrentHighlight = Constants.Highlight.ColumnActive
+			SetActive(ActiveIndex)
+		else:
+			var y = ActiveIndex / GRID_WIDTH
+			if y < GRID_HEIGHT - 1 and not Tiles[ActiveIndex + GRID_WIDTH].GetBlocked():
+				ActiveIndex += GRID_WIDTH
+				SetActive(ActiveIndex)
 
 func SetRowState(State):
 	var RowStart = ActiveIndex - (ActiveIndex % GRID_WIDTH) - 1
