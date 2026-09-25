@@ -48,7 +48,32 @@ func SetRowInvalid(Index : int, Invalid : bool):
 		if Tiles[i].GetBlocked():
 			break
 		Tiles[i].SetInvalidWord(Invalid)
-		
+
+func GetColumnCoords(Index : int) -> Vector2:
+	var ResultIndex = Index
+	for i in range(Index, -1, -GRID_WIDTH):
+		if Tiles[i].GetBlocked():
+			break
+		ResultIndex = i
+		#Tiles[i].SetState(State)
+	return Vector2(ResultIndex % GRID_WIDTH, ResultIndex / GRID_WIDTH)
+
+func GetRowCoords(Index : int) -> Vector2:
+	var ResultIndex = Index
+	#for i in range(Index, -1, -GRID_WIDTH):
+		#if Tiles[i].GetBlocked():
+			#break
+		#ResultIndex = i
+		#Tiles[i].SetState(State)
+	var RowStart = Index - (Index % GRID_WIDTH) - 1
+	
+	for i in range(Index, RowStart, -1):
+		if Tiles[i].GetBlocked():
+			break
+		ResultIndex = i
+		#Tiles[i].SetState(State)
+	return Vector2(ResultIndex % GRID_WIDTH, ResultIndex / GRID_WIDTH)
+
 func SetColumnState(State):
 	# Grow Down
 	for i in range(ActiveIndex, TILE_COUNT, GRID_WIDTH):
@@ -212,6 +237,8 @@ func SetTileNumbers():
 	
 	HintTitles = []
 	Thing = {}
+	var ThingAcross : Dictionary[String, Vector2] = {}
+	var ThingDown : Dictionary[String, Vector2] = {}
 	
 	#var Number = 1
 	var VerticalChecked = []
@@ -236,7 +263,7 @@ func SetTileNumbers():
 					Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
 					GivenNumber.append(x + y * GRID_WIDTH)
 					HintTitles.append(str(Number) + "D")
-					Thing[str(Number) + "D"] = Vector2(x, y)
+					ThingDown[str(Number) + "D"] = Vector2(x, y)
 			
 			# Mark this axis as considered in vertical
 			for dy in range(y, GRID_HEIGHT):
@@ -254,12 +281,12 @@ func SetTileNumbers():
 				if WordCount > 1:
 					if (y * GRID_WIDTH + x in GivenNumber):
 						HintTitles.append(str(Number) + "A")
-						Thing[str(Number) + "A"] = Vector2(x, y)
+						ThingAcross[str(Number) + "A"] = Vector2(x, y)
 					else:
 						Tiles[x + y * GRID_WIDTH].SetWordNumber(Number)
 						GivenNumber.append(x + y * GRID_WIDTH)
 						HintTitles.append(str(Number) + "A")
-						Thing[str(Number) + "A"] = Vector2(x, y)
+						ThingAcross[str(Number) + "A"] = Vector2(x, y)
 			
 			# Mark this axis as considered horizontally
 			for dx in range(x, GRID_WIDTH):
@@ -268,6 +295,9 @@ func SetTileNumbers():
 				HorizontalChecked.append(dx + y * GRID_WIDTH)
 			
 			Number += 1
+			
+	ThingAcross.merge(ThingDown)
+	Thing = ThingAcross
 
 var WordList : PackedStringArray
 
@@ -432,10 +462,40 @@ func EvaluatePuzzle():
 	ShowWinMessage(bDone)
 	return bDone
 
+func GetFirstFreeTileRow(Index : int):
+	var RowStart = Index - (Index % GRID_WIDTH) - 1
+	var RowEnd = RowStart + GRID_WIDTH + 1
+	var Result = Index	
+	# Grow Right
+	for i in range(Index, RowEnd):
+		Result = i
+		
+		if Tiles[i].GetBlocked() or Tiles[i].GetCharacter() != "":
+			continue
+			
+		if Tiles[i].GetCharacter() == "":
+			break
+		
+	return Result
+
+func GetFirstFreeTileColumn(Index : int):
+	var Result = Index
+	
+	# Grow Down
+	for i in range(Index, TILE_COUNT, GRID_WIDTH):
+		Result = i
+		if Tiles[i].GetBlocked() or Tiles[i].GetCharacter() != "":
+			continue
+		
+		if Tiles[i].GetCharacter() == "":
+			break
+	return Result
+
 func GoToNextTile():
 	var Tries = TILE_COUNT
 	
 	var NextTile = ActiveIndex
+
 	if CurrentHighlight == Constants.Highlight.RowActive:
 		NextTile += 1
 		if NextTile >= TILE_COUNT:
@@ -460,12 +520,36 @@ func GoToNextTile():
 		elif NextTile >= TILE_COUNT:
 			NextTile -= (TILE_COUNT - 1)
 		while Tiles[NextTile].GetBlocked() or Tiles[NextTile].GetCharacter() != "":
+
 			NextTile += GRID_WIDTH
 			if NextTile >= TILE_COUNT:
 				NextTile -= (TILE_COUNT - 1)
 			Tries -= 1
 			if Tries <= 0:
 				return
+
+	# Check which tile rules this tile
+	if CurrentHighlight == Constants.Highlight.RowActive:
+		var Coords = GetRowCoords(NextTile)
+		var a = Thing.find_key(Coords)
+		if not a:
+			Coords = GetColumnCoords(NextTile)
+			SetRowState(Constants.TileState.Inactive)
+			CurrentHighlight = Constants.Highlight.ColumnActive
+			NextTile = GetFirstFreeTileColumn(Coords.x + Coords.y * GRID_WIDTH)
+		else:
+			NextTile = GetFirstFreeTileRow(Coords.x + Coords.y * GRID_WIDTH)
+	elif CurrentHighlight == Constants.Highlight.ColumnActive:
+		var Coords = GetColumnCoords(NextTile)
+		var a = Thing.find_key(Coords)
+		if not a:
+			Coords = GetRowCoords(NextTile)
+			SetColumnState(Constants.TileState.Inactive)
+			CurrentHighlight = Constants.Highlight.RowActive
+			NextTile = GetFirstFreeTileRow(Coords.x + Coords.y * GRID_WIDTH)
+		else:
+			NextTile = GetFirstFreeTileColumn(Coords.x + Coords.y * GRID_WIDTH)
+	
 	SetActive(NextTile)
 
 func GoToPreviousTile():
@@ -501,6 +585,7 @@ func GoToPreviousTile():
 				PrevTile += TILE_COUNT - GRID_WIDTH - 1
 			else:
 				PrevTile -= GRID_WIDTH
+	
 	SetActive(PrevTile)
 
 func _input(event: InputEvent) -> void:

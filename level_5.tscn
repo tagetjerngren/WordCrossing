@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://dwjjijwlmk0kx"]
 
 [ext_resource type="PackedScene" uid="uid://cy4qo2joj2i5u" path="res://Scenes/word_crossing_manager.tscn" id="1_mg3yy"]
-[ext_resource type="PackedScene" uid="uid://dykya3a2dqoe7" path="res://level_1.tscn" id="2_br4so"]
 [ext_resource type="PackedScene" uid="uid://hkugd1j5ibmb" path="res://Scenes/block_tile_spawn.tscn" id="2_cp4ax"]
 [ext_resource type="PackedScene" uid="uid://3k2ewfgnj5lr" path="res://Scenes/word_start_tile_spawn.tscn" id="3_cp4ax"]
 
@@ -15,7 +14,6 @@ color = Color(0.4392, 0.72, 0.52812004, 1)
 
 [node name="WordCrossingManager" parent="." unique_id=1982975088 instance=ExtResource("1_mg3yy")]
 Grid_Size = 8
-NextLevel = ExtResource("2_br4so")
 
 [node name="Grid" parent="WordCrossingManager" index="0" unique_id=48706003]
 offset_left = 487.0
