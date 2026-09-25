@@ -60,18 +60,12 @@ func GetColumnCoords(Index : int) -> Vector2:
 
 func GetRowCoords(Index : int) -> Vector2:
 	var ResultIndex = Index
-	#for i in range(Index, -1, -GRID_WIDTH):
-		#if Tiles[i].GetBlocked():
-			#break
-		#ResultIndex = i
-		#Tiles[i].SetState(State)
 	var RowStart = Index - (Index % GRID_WIDTH) - 1
 	
 	for i in range(Index, RowStart, -1):
 		if Tiles[i].GetBlocked():
 			break
 		ResultIndex = i
-		#Tiles[i].SetState(State)
 	return Vector2(ResultIndex % GRID_WIDTH, ResultIndex / GRID_WIDTH)
 
 func SetColumnState(State):
@@ -106,26 +100,29 @@ func TileClicked(Index):
 	# Deactive the old selected row or column
 	if CurrentHighlight == Constants.Highlight.RowActive:
 		SetRowState(Constants.Highlight.Inactive)
-		#var Row = ActiveIndex / GRID_HEIGHT
-		#for i in range(Row * GRID_WIDTH, Row * GRID_WIDTH + GRID_WIDTH):
-			#Tiles[i].SetState(Constants.TileState.Inactive)
 	elif CurrentHighlight == Constants.Highlight.ColumnActive:
 		SetColumnState(Constants.Highlight.Inactive)
-		#var Column = ActiveIndex % GRID_HEIGHT
-		#for i in range(Column, TILE_COUNT, GRID_WIDTH):
-			#Tiles[i].SetState(Constants.TileState.Inactive)
-
-	# On click evaluate if the row or column should be highlighted
+	
 	if CurrentHighlight == Constants.Highlight.Inactive:
 		CurrentHighlight = Constants.Highlight.RowActive
-		bFocused = true
-	elif ActiveIndex == Index:
+	
+	if ActiveIndex == Index:
 		if CurrentHighlight == Constants.Highlight.RowActive:
 			CurrentHighlight = Constants.Highlight.ColumnActive
 		else:
 			CurrentHighlight = Constants.Highlight.RowActive
-	SetActive(Index)
 	
+	# If this is an exclusive tile
+	if not ((Thing.find_key(GetRowCoords(Index)) and Thing.find_key(GetRowCoords(Index))[-1] == "A") and (Thing.find_key(GetColumnCoords(Index)) and Thing.find_key(GetColumnCoords(Index))[-1] == "D")):
+		if (Thing.find_key(GetRowCoords(Index)) and Thing.find_key(GetRowCoords(Index))[-1] == "A"):
+			CurrentHighlight = Constants.Highlight.RowActive
+		elif (Thing.find_key(GetColumnCoords(Index)) and Thing.find_key(GetColumnCoords(Index))[-1] == "D"):
+			CurrentHighlight = Constants.Highlight.ColumnActive
+
+	# On click evaluate if the row or column should be highlighted
+	bFocused = true
+	
+	SetActive(Index)
 
 func SetActive(Index):
 	# Deactive the old selected tile
@@ -495,6 +492,12 @@ func GoToNextTile():
 	var Tries = TILE_COUNT
 	
 	var NextTile = ActiveIndex
+	var StartCoord
+	if CurrentHighlight == Constants.Highlight.RowActive:
+		StartCoord = GetRowCoords(ActiveIndex)
+	else:
+		StartCoord = GetColumnCoords(ActiveIndex)
+	
 
 	if CurrentHighlight == Constants.Highlight.RowActive:
 		NextTile += 1
@@ -520,35 +523,41 @@ func GoToNextTile():
 		elif NextTile >= TILE_COUNT:
 			NextTile -= (TILE_COUNT - 1)
 		while Tiles[NextTile].GetBlocked() or Tiles[NextTile].GetCharacter() != "":
-
 			NextTile += GRID_WIDTH
 			if NextTile >= TILE_COUNT:
 				NextTile -= (TILE_COUNT - 1)
 			Tries -= 1
 			if Tries <= 0:
 				return
-
-	# Check which tile rules this tile
+	
+	var EndCoord
 	if CurrentHighlight == Constants.Highlight.RowActive:
-		var Coords = GetRowCoords(NextTile)
-		var a = Thing.find_key(Coords)
-		if not a:
-			Coords = GetColumnCoords(NextTile)
-			SetRowState(Constants.TileState.Inactive)
-			CurrentHighlight = Constants.Highlight.ColumnActive
-			NextTile = GetFirstFreeTileColumn(Coords.x + Coords.y * GRID_WIDTH)
-		else:
-			NextTile = GetFirstFreeTileRow(Coords.x + Coords.y * GRID_WIDTH)
-	elif CurrentHighlight == Constants.Highlight.ColumnActive:
-		var Coords = GetColumnCoords(NextTile)
-		var a = Thing.find_key(Coords)
-		if not a:
-			Coords = GetRowCoords(NextTile)
-			SetColumnState(Constants.TileState.Inactive)
-			CurrentHighlight = Constants.Highlight.RowActive
-			NextTile = GetFirstFreeTileRow(Coords.x + Coords.y * GRID_WIDTH)
-		else:
-			NextTile = GetFirstFreeTileColumn(Coords.x + Coords.y * GRID_WIDTH)
+		EndCoord = GetRowCoords(NextTile)
+	else:
+		EndCoord = GetColumnCoords(NextTile)
+	
+	if StartCoord != EndCoord:
+		# Check which tile rules this tile
+		if CurrentHighlight == Constants.Highlight.RowActive:
+			var Coords = GetRowCoords(NextTile)
+			var a = Thing.find_key(Coords)
+			if not a:
+				Coords = GetColumnCoords(NextTile)
+				SetRowState(Constants.TileState.Inactive)
+				CurrentHighlight = Constants.Highlight.ColumnActive
+				NextTile = GetFirstFreeTileColumn(Coords.x + Coords.y * GRID_WIDTH)
+			else:
+				NextTile = GetFirstFreeTileRow(Coords.x + Coords.y * GRID_WIDTH)
+		elif CurrentHighlight == Constants.Highlight.ColumnActive:
+			var Coords = GetColumnCoords(NextTile)
+			var a = Thing.find_key(Coords)
+			if not a:
+				Coords = GetRowCoords(NextTile)
+				SetColumnState(Constants.TileState.Inactive)
+				CurrentHighlight = Constants.Highlight.RowActive
+				NextTile = GetFirstFreeTileRow(Coords.x + Coords.y * GRID_WIDTH)
+			else:
+				NextTile = GetFirstFreeTileColumn(Coords.x + Coords.y * GRID_WIDTH)
 	
 	SetActive(NextTile)
 
@@ -600,6 +609,7 @@ func _input(event: InputEvent) -> void:
 			Tiles[ActiveIndex].SetCharacter("")
 			EvaluatePuzzle()
 		if 65 <= label and label <= 90:
+			var bTileWasFilled = Tiles[ActiveIndex].GetCharacter() != ""
 			Tiles[ActiveIndex].SetCharacter(OS.get_keycode_string(label))
 			if not EvaluatePuzzle():
 				GoToNextTile()
