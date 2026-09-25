@@ -7,15 +7,17 @@ var CoveredTile : Tile
 var Spawner : WordStartTileSpawn
 var CurrentDirection = Constants.Highlight.ColumnActive
 
+@onready var Grid = $"../WordCrossingManager/Grid"
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if bHeld:
 		position = get_global_mouse_position()
 		
 		# Gross way to remove focus from the grid while tile is held
-		$"../Grid".bFocused = false
-		$"../Grid".SetRowState(Constants.Highlight.Inactive)
-		$"../Grid".SetColumnState(Constants.Highlight.Inactive)
+		Grid.bFocused = false
+		Grid.SetRowState(Constants.Highlight.Inactive)
+		Grid.SetColumnState(Constants.Highlight.Inactive)
 		
 		if Input.is_action_just_pressed("RotateWordStartTile"):
 			if CurrentDirection == Constants.Highlight.ColumnActive:
@@ -63,8 +65,8 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 		else:
 			DeleteSelf()
 		
-		$"../Grid".EvaluatePuzzle()
+		Grid.EvaluatePuzzle()
 	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
 		DeleteSelf()
-		$"../Grid".EvaluatePuzzle()
+		Grid.EvaluatePuzzle()
